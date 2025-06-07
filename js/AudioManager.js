@@ -1,75 +1,75 @@
+// AudioManager simplificado y estable
 class AudioManager {
     constructor() {
-        this.sounds = {};
-        this.isMuted = false;
+        console.log('🎵 AudioManager constructor iniciado');
+        this.isMuted = localStorage.getItem('piRunnerMuted') === 'true';
         this.isInitialized = false;
-        
-        // No intentar cargar nada en el constructor
-        this.soundFiles = {
-            coinCollect: 'sounds/coin_collect.wav',
-            explosion: 'sounds/explosion.wav',
-            backgroundMusic: 'sounds/background_music.mp3',
-            superJump: 'sounds/super_jump.wav'
-        };
-        
-        console.log('AudioManager creado');
+        this.sounds = {};
+        console.log('🎵 AudioManager iniciado correctamente');
     }
     
-    // Método seguro para cargar un sonido
-    loadSound(key, file) {
-        try {
-            const audio = new Audio(file);
-            audio.volume = 0.5;
-            audio.preload = 'none';
-            
-            // Configurar música de fondo para loop
-            if (key === 'backgroundMusic') {
-                audio.loop = true;
-                audio.volume = 0.3;
-            }
-            
-            this.sounds[key] = audio;
-            console.log(`Sonido ${key} preparado`);
-        } catch (error) {
-            console.warn(`Error preparando ${key}:`, error);
-            this.sounds[key] = { play: () => {}, pause: () => {} };
-        }
+    playCoinCollectSound() {
+        this.playSound('coin');
     }
     
-    // Inicialización lazy - solo cuando se necesite
-    ensureSound(key) {
-        if (!this.sounds[key] && this.soundFiles[key]) {
-            this.loadSound(key, this.soundFiles[key]);
-        }
+    playExplosionSound() {
+        this.playSound('explosion');
     }
     
-    // Reproducir sonido de forma segura
-    playSound(key) {
+    playSuperJumpSound() {
+        this.playSound('jump');
+    }
+    
+    playSound(type) {
         if (this.isMuted) return;
         
         try {
-            this.ensureSound(key);
-            const sound = this.sounds[key];
-            if (sound && sound.play) {
-                sound.currentTime = 0;
-                sound.play().catch(() => {
-                    // Ignorar errores de autoplay
-                });
+            // Versión muy simple por ahora
+            console.log(`🎵 Playing sound: ${type}`);
+            
+            if (!this.sounds[type]) {
+                const audio = new Audio();
+                audio.volume = 0.3;
+                
+                switch(type) {
+                    case 'coin':
+                        audio.src = 'sounds/coin_collect.wav';
+                        break;
+                    case 'explosion':
+                        audio.src = 'sounds/explosion.wav';
+                        break;
+                    case 'jump':
+                        audio.src = 'sounds/super_jump.wav';
+                        break;
+                    case 'music':
+                        audio.src = 'sounds/background_music.mp3';
+                        audio.loop = true;
+                        audio.volume = 0.1;
+                        break;
+                }
+                
+                this.sounds[type] = audio;
             }
+            
+            const audio = this.sounds[type];
+            audio.currentTime = 0;
+            audio.play().catch(() => {
+                // Ignorar errores de autoplay
+            });
+            
         } catch (error) {
-            // Ignorar completamente errores de audio
+            // Ignorar errores de audio completamente
         }
     }
     
     playBackgroundMusic() {
-        this.playSound('backgroundMusic');
+        this.playSound('music');
     }
     
     stopBackgroundMusic() {
         try {
-            const music = this.sounds.backgroundMusic;
-            if (music && music.pause) {
-                music.pause();
+            if (this.sounds.music) {
+                this.sounds.music.pause();
             }
         } catch (error) {
             // Ignorar errores
@@ -78,6 +78,7 @@ class AudioManager {
     
     toggleMute() {
         this.isMuted = !this.isMuted;
+        localStorage.setItem('piRunnerMuted', this.isMuted);
         
         if (this.isMuted) {
             this.stopBackgroundMusic();
@@ -85,30 +86,23 @@ class AudioManager {
             this.playBackgroundMusic();
         }
         
+        console.log(`🎵 Audio ${this.isMuted ? 'silenciado' : 'activado'}`);
         return this.isMuted;
     }
     
-    // Métodos específicos del juego
-    playCoinCollectSound() {
-        this.playSound('coinCollect');
-    }
-    
-    playExplosionSound() {
-        this.playSound('explosion');
-    }
-    
-    playSuperJumpSound() {
-        this.playSound('superJump');
-    }
-    
-    // Método dummy para compatibilidad
-    async initializeAfterUserGesture() {
+    initializeAfterUserGesture() {
         this.isInitialized = true;
-        console.log('AudioManager inicializado');
+        console.log('🎵 AudioManager inicializado tras gesto del usuario');
         
-        // Iniciar música de fondo automáticamente después de primera interacción
         if (!this.isMuted) {
             this.playBackgroundMusic();
         }
     }
+    
+    // Método dummy para compatibilidad
+    adjustPerformanceMode() {
+        // No hace nada por ahora
+    }
 }
+
+console.log('🎵 AudioManager class definida correctamente');

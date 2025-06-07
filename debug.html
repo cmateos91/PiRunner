@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pi Runner - Debug</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/game-container.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/effects.css">
+    <link rel="stylesheet" href="css/explosion-effects.css">
+    <link rel="stylesheet" href="css/math-enemies.css">
+    <link rel="stylesheet" href="css/jump-system.css">
+    <link rel="stylesheet" href="css/pi-notifications.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    
+    <!-- Pi Network SDK -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    
+    <style>
+        /* Debug styles */
+        #debugInfo {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui">
+            <div class="ui-scores">
+                <div>Puntos: <span id="score">0</span></div>
+                <div>Pi Coins: <span id="coins">0</span></div>
+            </div>
+            <button id="muteButton" class="audio-control">🔊</button>
+        </div>
+        
+        <div id="gameOver">
+            <h2>¡Juego Terminado!</h2>
+            <p>Puntuación: <span id="finalScore">0</span></p>
+            <p>Pi Coins: <span id="finalCoins">0</span></p>
+            <div class="game-over-buttons">
+                <button class="btn" onclick="game.restart()">Reiniciar</button>
+                <div class="secondary-buttons">
+                    <button class="btn btn-secondary" onclick="showLeaderboard()">📊 Clasificación</button>
+                    <button class="btn btn-secondary" onclick="saveScore()">💾 Guardar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="debugInfo">
+            Cargando debug info...
+        </div>
+    </div>
+    
+    <script>
+        console.log('🚀 Iniciando carga de scripts...');
+        
+        // Debug de carga de scripts
+        function logScriptLoad(name) {
+            console.log(`✅ Script cargado: ${name}`);
+            updateDebugInfo();
+        }
+        
+        function logScriptError(name, error) {
+            console.error(`❌ Error cargando ${name}:`, error);
+            updateDebugInfo();
+        }
+        
+        function updateDebugInfo() {
+            const debugDiv = document.getElementById('debugInfo');
+            if (debugDiv) {
+                debugDiv.innerHTML = `
+                    Scripts: ${document.scripts.length}<br>
+                    Game: ${typeof window.game}<br>
+                    AudioManager: ${typeof AudioManager}<br>
+                    Player: ${typeof Player}<br>
+                    Canvas: ${document.getElementById('gameCanvas') ? 'OK' : 'MISSING'}
+                `;
+            }
+        }
+        
+        // Capturar errores globales
+        window.addEventListener('error', (e) => {
+            console.error('❌ Error global:', e.error, e.filename, e.lineno);
+            updateDebugInfo();
+        });
+        
+        setInterval(updateDebugInfo, 1000);
+    </script>
+    
+    <!-- JavaScript Core Files -->
+    <script src="js/config.js" onload="logScriptLoad('config')" onerror="logScriptError('config', event)"></script>
+    <script src="js/pi-browser-config.js" onload="logScriptLoad('pi-browser-config')" onerror="logScriptError('pi-browser-config', event)"></script>
+    <script src="js/PerformanceMonitor.js" onload="logScriptLoad('PerformanceMonitor')" onerror="logScriptError('PerformanceMonitor', event)"></script>
+    <script src="js/AudioManager.js" onload="logScriptLoad('AudioManager')" onerror="logScriptError('AudioManager', event)"></script>
+    <script src="js/ParticleSystem.js" onload="logScriptLoad('ParticleSystem')" onerror="logScriptError('ParticleSystem', event)"></script>
+    <script src="js/CoinFragmentSystem.js" onload="logScriptLoad('CoinFragmentSystem')" onerror="logScriptError('CoinFragmentSystem', event)"></script>
+    <script src="js/MathEnemyEffects.js" onload="logScriptLoad('MathEnemyEffects')" onerror="logScriptError('MathEnemyEffects', event)"></script>
+    <script src="js/Player.js" onload="logScriptLoad('Player')" onerror="logScriptError('Player', event)"></script>
+    <script src="js/ObstacleManager.js" onload="logScriptLoad('ObstacleManager')" onerror="logScriptError('ObstacleManager', event)"></script>
+    <script src="js/CoinManager.js" onload="logScriptLoad('CoinManager')" onerror="logScriptError('CoinManager', event)"></script>
+    <script src="js/Renderer.js" onload="logScriptLoad('Renderer')" onerror="logScriptError('Renderer', event)"></script>
+    <script src="js/InputHandler.js" onload="logScriptLoad('InputHandler')" onerror="logScriptError('InputHandler', event)"></script>
+    <script src="js/CollisionManager.js" onload="logScriptLoad('CollisionManager')" onerror="logScriptError('CollisionManager', event)"></script>
+    <script src="js/GameUI.js" onload="logScriptLoad('GameUI')" onerror="logScriptError('GameUI', event)"></script>
+    <script src="js/Game.js" onload="logScriptLoad('Game')" onerror="logScriptError('Game', event)"></script>
+    <script src="js/audio-controls.js" onload="logScriptLoad('audio-controls')" onerror="logScriptError('audio-controls', event)"></script>
+    <script src="js/pi-network-integration.js" onload="logScriptLoad('pi-network-integration')" onerror="logScriptError('pi-network-integration', event)"></script>
+    <script src="js/game-over-functions.js" onload="logScriptLoad('game-over-functions')" onerror="logScriptError('game-over-functions', event)"></script>
+</body>
+</html>

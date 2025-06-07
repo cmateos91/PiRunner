@@ -1,12 +1,40 @@
 class ParticleSystem {
     constructor() {
         this.particles = [];
+        this.maxParticles = 50;
+        this.isLowPerformanceMode = false;
+    }
+    
+    setLowPerformanceMode(enabled) {
+        this.isLowPerformanceMode = enabled;
+        this.maxParticles = enabled ? 20 : 50;
+        
+        // Reducir partículas existentes si es necesario
+        if (enabled && this.particles.length > this.maxParticles) {
+            this.particles = this.particles.slice(0, this.maxParticles);
+        }
+    }
+    
+    addParticle(particle) {
+        // En modo bajo rendimiento, reducir probabilidad de crear partículas
+        if (this.isLowPerformanceMode && Math.random() > 0.5) {
+            return;
+        }
+        
+        this.particles.push(particle);
+        
+        // Mantener límite de partículas
+        if (this.particles.length > this.maxParticles) {
+            this.particles.shift();
+        }
     }
     
     createSuperJumpEffect(x, y) {
         // Efecto especial para supersalto - más partículas y colores únicos
-        for (let i = 0; i < 12; i++) {
-            this.particles.push({
+        const count = this.isLowPerformanceMode ? 6 : 12;
+        
+        for (let i = 0; i < count; i++) {
+            this.addParticle({
                 x: x + (Math.random() - 0.5) * 40,
                 y: y + 25,
                 vx: (Math.random() - 0.5) * 8,
@@ -25,9 +53,11 @@ class ParticleSystem {
     
     createShockwave(x, y) {
         // Onda de choque circular para supersalto
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            this.particles.push({
+        const count = this.isLowPerformanceMode ? 4 : 8;
+        
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            this.addParticle({
                 x: x,
                 y: y,
                 vx: Math.cos(angle) * 6,
@@ -41,8 +71,10 @@ class ParticleSystem {
     }
     
     createCoinCollectEffect(x, y) {
-        for (let i = 0; i < 8; i++) {
-            this.particles.push({
+        const count = this.isLowPerformanceMode ? 4 : 8;
+        
+        for (let i = 0; i < count; i++) {
+            this.addParticle({
                 x: x,
                 y: y,
                 vx: (Math.random() - 0.5) * 6,
@@ -56,10 +88,11 @@ class ParticleSystem {
     }
     
     createJumpEffect(x, y, intensity = 1) {
-        const particleCount = Math.floor(3 + intensity * 4); // 3-7 partículas según intensidad
+        const baseCount = this.isLowPerformanceMode ? 2 : 3;
+        const particleCount = Math.floor(baseCount + intensity * (this.isLowPerformanceMode ? 2 : 4));
         
         for (let i = 0; i < particleCount; i++) {
-            this.particles.push({
+            this.addParticle({
                 x: x + (Math.random() - 0.5) * 30,
                 y: y + 20,
                 vx: (Math.random() - 0.5) * 4 * intensity,

@@ -48,6 +48,9 @@
     min-width: 32px;
     height: 32px;
     flex-shrink: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .audio-control:hover {
@@ -57,10 +60,21 @@
     transform: scale(1.05);
 }
 
+.audio-control:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
+}
+
 .audio-control.muted {
     color: var(--pi-red);
     background: rgba(239, 68, 68, 0.1);
     border-color: var(--pi-red);
+    opacity: 0.8;
+}
+
+.audio-control.muted:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.2);
 }
 
 @media (max-width: 768px) {
