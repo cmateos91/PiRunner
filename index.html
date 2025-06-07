@@ -33,7 +33,13 @@
             <h2>¡Juego Terminado!</h2>
             <p>Puntuación: <span id="finalScore">0</span></p>
             <p>Pi Coins: <span id="finalCoins">0</span></p>
-            <button class="btn" onclick="game.restart()">Reiniciar</button>
+            <div class="game-over-buttons">
+                <button class="btn" onclick="game.restart()">Reiniciar</button>
+                <div class="secondary-buttons">
+                    <button class="btn btn-secondary" onclick="showLeaderboard()">📊 Clasificación</button>
+                    <button class="btn btn-secondary" onclick="saveScore()">💾 Guardar</button>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -51,5 +57,6 @@
     <script src="js/GameUI.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/audio-controls.js"></script>
+    <script src="js/game-over-functions.js"></script>
 </body>
 </html>

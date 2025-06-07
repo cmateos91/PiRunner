@@ -49,6 +49,18 @@
     box-shadow: var(--shadow-primary);
     position: relative;
     overflow: hidden;
+    display: inline-block;
+}
+
+.btn.btn-secondary {
+    background: linear-gradient(135deg, var(--pi-gray-600), var(--pi-gray-500));
+    color: var(--pi-gray-100);
+    padding: 10px 20px;
+    margin: 8px 4px 0;
+    font-size: 14px;
+    min-height: 36px;
+    min-width: 100px;
+    font-weight: 500;
 }
 
 .btn::before {
@@ -72,6 +84,24 @@
     transform: translateY(-2px);
 }
 
+.btn.btn-secondary:hover {
+    background: linear-gradient(135deg, var(--pi-gray-500), var(--pi-gray-400));
+    color: var(--pi-gray-50);
+}
+
+.game-over-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.secondary-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
 @media (max-width: 768px) {
     #gameOver {
         padding: 20px;
@@ -89,5 +119,17 @@
         font-size: 16px;
         min-height: 52px;
         margin: 12px 4px 0;
+    }
+    
+    .btn.btn-secondary {
+        padding: 8px 16px;
+        font-size: 12px;
+        min-height: 32px;
+        min-width: 80px;
+        margin: 6px 2px 0;
+    }
+    
+    .secondary-buttons {
+        gap: 6px;
     }
 }
