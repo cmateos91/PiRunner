@@ -124,19 +124,34 @@ export default async function handler(req, res) {
 // Save score to leaderboard after successful payment
 async function saveScoreToLeaderboard(payment) {
   try {
-    console.log('Saving score to leaderboard:', {
+    console.log('=== SAVING SCORE TO LEADERBOARD ===');
+    console.log('Payment data:', JSON.stringify(payment, null, 2));
+
+    const scoreData = {
       paymentId: payment.identifier,
       userUid: payment.user_uid,
       score: payment.metadata?.score,
       coins: payment.metadata?.coins,
-      timestamp: payment.metadata?.timestamp
-    });
+      timestamp: payment.metadata?.timestamp,
+      txid: payment.transaction?.txid
+    };
 
-    // Get user info from Pi API
+    console.log('Score data to save:', scoreData);
+
+    // Get user info
     const userInfo = await getUserInfo(payment.user_uid);
+    console.log('User info:', userInfo);
+
+    // Construir URL correcta para la API
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'https://pi-runner.vercel.app';
+    
+    const apiUrl = `${baseUrl}/api/leaderboard`;
+    console.log('Calling leaderboard API:', apiUrl);
 
     // Call leaderboard API to save score
-    const response = await fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/leaderboard`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,8 +162,12 @@ async function saveScoreToLeaderboard(payment) {
       })
     });
 
+    console.log('Leaderboard API response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`Leaderboard API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Leaderboard API error:', errorText);
+      throw new Error(`Leaderboard API error: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();

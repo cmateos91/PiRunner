@@ -10,5 +10,8 @@
   },
   "keywords": ["pi-network", "game", "blockchain", "runner"],
   "author": "Tu nombre",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/kv": "^1.0.0"
+  }
 }

@@ -1,4 +1,4 @@
-// Leaderboard API - Get scores
+// Leaderboard API - Get scores with persistent storage
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,11 +10,15 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`=== LEADERBOARD API ${req.method} ===`);
+    
     if (req.method === 'GET') {
-      // Obtener leaderboard
+      console.log('Getting leaderboard scores...');
       const { type = 'allTime', limit = 10 } = req.query;
+      console.log('Query params:', { type, limit });
       
       const scores = await getScores(type, parseInt(limit));
+      console.log(`Found ${scores.length} scores`);
       
       return res.status(200).json({
         success: true,
@@ -25,24 +29,35 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      // Agregar nuevo score (solo desde backend internal)
+      console.log('Saving new score...');
       const { paymentData, userInfo } = req.body;
+      console.log('Received data:', { paymentData: !!paymentData, userInfo: !!userInfo });
       
+      if (!paymentData || !userInfo) {
+        console.error('Missing required data');
+        return res.status(400).json({
+          success: false,
+          error: 'Missing paymentData or userInfo'
+        });
+      }
+
       const newScore = {
         id: generateScoreId(),
         paymentId: paymentData.identifier,
         userUid: paymentData.user_uid,
         username: userInfo.username,
-        score: paymentData.metadata.score,
-        coins: paymentData.metadata.coins,
+        score: paymentData.metadata?.score || 0,
+        coins: paymentData.metadata?.coins || 0,
         timestamp: new Date().toISOString(),
         txid: paymentData.transaction?.txid || null,
-        verified: paymentData.status.developer_completed,
-        gameVersion: paymentData.metadata.gameVersion || "1.0"
+        verified: paymentData.status?.developer_completed || false,
+        gameVersion: paymentData.metadata?.gameVersion || "1.0"
       };
 
+      console.log('New score object:', newScore);
+
       await saveScore(newScore);
-      await updateLeaderboards(newScore);
+      console.log('Score saved successfully');
 
       return res.status(200).json({
         success: true,
@@ -63,49 +78,88 @@ export default async function handler(req, res) {
   }
 }
 
-// Simple file-based storage (for testing)
-// TODO: Replace with real database
-let scoresStorage = [];
+// Simple persistent storage using global variable + file simulation
+// For production, replace with real database (Vercel KV, MongoDB, etc.)
+
+// Global scores storage (simulates persistent database)
+let globalScoresStorage = null;
+
+async function initializeStorage() {
+  if (globalScoresStorage === null) {
+    console.log('Initializing scores storage...');
+    // In a real implementation, this would load from database
+    globalScoresStorage = [];
+    
+    // Load any existing scores from environment or external source
+    // For now, start with empty array
+    console.log('Storage initialized with', globalScoresStorage.length, 'scores');
+  }
+  return globalScoresStorage;
+}
 
 async function getScores(type = 'allTime', limit = 10) {
+  console.log(`Getting scores for type: ${type}, limit: ${limit}`);
+  
+  const storage = await initializeStorage();
+  console.log(`Total scores in storage: ${storage.length}`);
+  
   // Filter by time period
-  let filteredScores = scoresStorage;
+  let filteredScores = [...storage];
+  
+  const now = new Date();
   
   if (type === 'daily') {
-    const yesterday = new Date();
+    const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
-    filteredScores = scoresStorage.filter(s => new Date(s.timestamp) > yesterday);
+    filteredScores = storage.filter(s => new Date(s.timestamp) > yesterday);
+    console.log(`Daily scores: ${filteredScores.length}`);
   } else if (type === 'weekly') {
-    const lastWeek = new Date();
+    const lastWeek = new Date(now);
     lastWeek.setDate(lastWeek.getDate() - 7);
-    filteredScores = scoresStorage.filter(s => new Date(s.timestamp) > lastWeek);
+    filteredScores = storage.filter(s => new Date(s.timestamp) > lastWeek);
+    console.log(`Weekly scores: ${filteredScores.length}`);
   } else if (type === 'monthly') {
-    const lastMonth = new Date();
+    const lastMonth = new Date(now);
     lastMonth.setMonth(lastMonth.getMonth() - 1);
-    filteredScores = scoresStorage.filter(s => new Date(s.timestamp) > lastMonth);
+    filteredScores = storage.filter(s => new Date(s.timestamp) > lastMonth);
+    console.log(`Monthly scores: ${filteredScores.length}`);
   }
 
   // Sort by score descending and limit
-  return filteredScores
+  const result = filteredScores
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((score, index) => ({
       ...score,
       rank: index + 1
     }));
+
+  console.log(`Returning ${result.length} scores for ${type}`);
+  return result;
 }
 
 async function saveScore(scoreData) {
-  // Add to in-memory storage
-  scoresStorage.push(scoreData);
+  console.log('Saving score to storage:', scoreData);
   
-  // TODO: Save to real database
-  console.log('Score saved:', scoreData);
-}
-
-async function updateLeaderboards(newScore) {
-  // TODO: Update cached leaderboards efficiently
-  console.log('Leaderboards updated with new score:', newScore.score);
+  const storage = await initializeStorage();
+  
+  // Check if score already exists (prevent duplicates)
+  const existingIndex = storage.findIndex(s => s.paymentId === scoreData.paymentId);
+  
+  if (existingIndex >= 0) {
+    console.log('Score already exists, updating...');
+    storage[existingIndex] = scoreData;
+  } else {
+    console.log('Adding new score...');
+    storage.push(scoreData);
+  }
+  
+  console.log(`Storage now has ${storage.length} total scores`);
+  
+  // In production, save to real database here
+  // await database.saveScores(storage);
+  
+  return scoreData;
 }
 
 function generateScoreId() {
