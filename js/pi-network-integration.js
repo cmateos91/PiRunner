@@ -82,7 +82,7 @@ class PiNetworkManager {
                     coins: coins,
                     timestamp: Date.now(),
                     gameVersion: "1.0",
-                    appWallet: "GBYCQD35WCGKAECP3CLCFB7SAWF5L3AKWRKPPQONZK4BAEQQ37JMTN3V"
+                    appWallet: window.APP_WALLET || "GBYCQD35WCGKAECP3CLCFB7SAWF5L3AKWRKPPQONZK4BAEQQ37JMTN3V"
                 }
             };
 

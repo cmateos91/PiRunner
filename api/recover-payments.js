@@ -1,7 +1,7 @@
 // API para recuperar y procesar pagos incompletos
 import KVStorage from '../lib/KVStorage.js';
 
-const PI_API_KEY = 'odukea0zelpnbewox9feh6ovr3nti06egwfyzkkekhkyzbunamixhuibj0fers5k';
+const PI_API_KEY = process.env.PI_API_KEY;
 const PI_API_BASE = 'https://api.minepi.com/v2';
 
 // CORS headers
