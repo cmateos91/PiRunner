@@ -75,13 +75,14 @@ class PiNetworkManager {
 
         try {
             const paymentData = {
-                amount: 1, // TODO: Definir precio final
+                amount: 0.01, // Precio accesible para testing
                 memo: `Guardar puntuación: ${score} puntos, ${coins} Pi Coins`,
                 metadata: {
                     score: score,
                     coins: coins,
                     timestamp: Date.now(),
-                    gameVersion: "1.0"
+                    gameVersion: "1.0",
+                    appWallet: "GBYCQD35WCGKAECP3CLCFB7SAWF5L3AKWRKPPQONZK4BAEQQ37JMTN3V"
                 }
             };
 
@@ -120,17 +121,60 @@ class PiNetworkManager {
     }
 
     handleServerApproval(paymentId) {
-        // TODO: Implementar cuando tengamos backend
-        console.log('TODO: Enviar para aprobación del servidor:', paymentId);
-        // Por ahora simulamos aprobación automática
+        console.log('Enviando para aprobación del servidor:', paymentId);
         this.showPaymentMessage('Procesando pago...', 'info');
+        
+        // Enviar al backend para aprobación
+        this.callBackendAPI('approve', paymentId)
+            .then(response => {
+                console.log('Pago aprobado:', response);
+            })
+            .catch(error => {
+                console.error('Error en aprobación:', error);
+                this.showPaymentMessage('Error en la aprobación del pago', 'error');
+            });
     }
 
     handleServerCompletion(paymentId, txid) {
-        // TODO: Implementar cuando tengamos backend
-        console.log('TODO: Enviar para completar en servidor:', paymentId, txid);
-        // Por ahora simulamos completado exitoso
-        this.showPaymentMessage('¡Puntuación guardada exitosamente!', 'success');
+        console.log('Enviando para completar en servidor:', paymentId, txid);
+        this.showPaymentMessage('Finalizando pago...', 'info');
+        
+        // Enviar al backend para completar
+        this.callBackendAPI('complete', paymentId, txid)
+            .then(response => {
+                console.log('Pago completado:', response);
+                this.showPaymentMessage('¡Puntuación guardada exitosamente! 🎉', 'success');
+            })
+            .catch(error => {
+                console.error('Error en completado:', error);
+                this.showPaymentMessage('Error al completar el pago', 'error');
+            });
+    }
+
+    async callBackendAPI(action, paymentId, txid = null) {
+        try {
+            const baseUrl = window.location.origin;
+            const response = await fetch(`${baseUrl}/api/payments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: action,
+                    paymentId: paymentId,
+                    txid: txid
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Backend API call failed:', error);
+            throw error;
+        }
     }
 
     handleIncompletePayment(payment) {

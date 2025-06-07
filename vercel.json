@@ -5,6 +5,11 @@
   "cleanUrls": true,
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": ".",
+  "functions": {
+    "api/payments.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
