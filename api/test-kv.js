@@ -6,18 +6,26 @@ export default async function handler(req, res) {
     console.log('Testing KV connection...');
     
     // Test write
-    await kv.set('test-key', { message: 'KV is working!', timestamp: new Date().toISOString() });
+    const testData = { 
+      message: 'KV is working!', 
+      timestamp: new Date().toISOString(),
+      test: true 
+    };
+    
+    await kv.set('test-key', testData);
     
     // Test read
     const result = await kv.get('test-key');
     
     return res.status(200).json({
       success: true,
-      message: 'KV connection working',
+      message: 'KV connection working perfectly!',
       data: result,
       env: {
-        hasStorageUrl: !!process.env.STORAGE_URL,
-        hasStorageToken: !!process.env.STORAGE_TOKEN
+        hasKvUrl: !!process.env.KV_REST_API_URL,
+        hasKvToken: !!process.env.KV_REST_API_TOKEN,
+        hasStorageUrl: !!process.env.STORAGE_REST_API_URL,
+        hasStorageToken: !!process.env.STORAGE_REST_API_TOKEN
       }
     });
     
@@ -27,8 +35,10 @@ export default async function handler(req, res) {
       success: false,
       error: error.message,
       env: {
-        hasStorageUrl: !!process.env.STORAGE_URL,
-        hasStorageToken: !!process.env.STORAGE_TOKEN
+        hasKvUrl: !!process.env.KV_REST_API_URL,
+        hasKvToken: !!process.env.KV_REST_API_TOKEN,
+        hasStorageUrl: !!process.env.STORAGE_REST_API_URL,
+        hasStorageToken: !!process.env.STORAGE_REST_API_TOKEN
       }
     });
   }
