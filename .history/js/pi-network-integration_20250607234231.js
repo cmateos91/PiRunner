@@ -14,7 +14,7 @@ class PiNetworkManager {
             
             await Pi.init({ 
                 version: "2.0",
-                sandbox: false
+                sandbox: !isProduction
             });
             
             this.isInitialized = true;
