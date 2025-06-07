@@ -1,13 +1,78 @@
-/* Variables CSS para consistencia */
+/* Variables CSS inspiradas en Pi Network (sin usar colores exactos de marca) */
 :root {
-    --primary-color: #FFC72C;
-    --primary-hover: #FFD700;
-    --secondary-color: #667eea;
-    --dark-bg: rgba(0,0,0,0.9);
-    --border-color: #333;
-    --text-shadow: 2px 2px 0px #000;
-    --border-radius: 10px;
-    --transition: all 0.3s ease;
+    /* Paleta principal inspirada en Pi Network */
+    --pi-gold-primary: #E6B800;      /* Dorado de monedas (inspirado en Pi) */
+    --pi-gold-light: #FFD700;        /* Dorado claro */
+    --pi-gold-dark: #B8860B;         /* Dorado oscuro */
+    
+    /* Morados y azules inspirados en el ecosistema Pi */
+    --pi-purple-primary: #6B46C1;    /* Púrpura principal */
+    --pi-purple-light: #8B5CF6;      /* Púrpura claro */
+    --pi-purple-dark: #553C9A;       /* Púrpura oscuro */
+    
+    --pi-blue-primary: #2563EB;      /* Azul principal */
+    --pi-blue-light: #3B82F6;        /* Azul claro */
+    --pi-blue-dark: #1D4ED8;         /* Azul oscuro */
+    
+    /* Grises modernos */
+    --pi-gray-50: #F9FAFB;
+    --pi-gray-100: #F3F4F6;
+    --pi-gray-200: #E5E7EB;
+    --pi-gray-300: #D1D5DB;
+    --pi-gray-400: #9CA3AF;
+    --pi-gray-500: #6B7280;
+    --pi-gray-600: #4B5563;
+    --pi-gray-700: #374151;
+    --pi-gray-800: #1F2937;
+    --pi-gray-900: #111827;
+    
+    /* Colores de enemigos matemáticos - más sutiles */
+    --enemy-sigma: #DC2626;           /* Rojo más suave */
+    --enemy-integral: #7C3AED;       /* Púrpura más suave */
+    --enemy-delta: #059669;          /* Verde más suave */
+    --enemy-infinity: #EA580C;       /* Naranja más suave */
+    --enemy-alpha: #9333EA;          /* Púrpura diferente */
+    --enemy-beta: --pi-gray-600;     /* Gris del sistema */
+    --enemy-gamma: #92400E;          /* Marrón más suave */
+    --enemy-theta: #B91C1C;          /* Rojo oscuro más suave */
+    
+    /* Fondos y gradientes */
+    --bg-primary: linear-gradient(135deg, var(--pi-blue-primary) 0%, var(--pi-purple-primary) 100%);
+    --bg-secondary: linear-gradient(to bottom, #E0F2FE 0%, #DCFCE7 70%, var(--pi-gray-200) 100%);
+    
+    /* Sombras y efectos */
+    --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 20px rgba(230, 184, 0, 0.3);
+    --text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    
+    /* Transiciones */
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+    
+    /* Radios y espaciado */
+    --border-radius: 12px;
+    --border-radius-sm: 6px;
+    --border-radius-lg: 16px;
+    
+    /* Variables heredadas (actualizadas) */
+    --primary-color: var(--pi-gold-primary);
+    --primary-hover: var(--pi-gold-light);
+    --secondary-color: var(--pi-blue-primary);
+    --dark-bg: rgba(31, 41, 55, 0.95);
+    --border-color: var(--pi-gray-300);
+    --border-radius: var(--border-radius);
+    --transition: var(--transition-normal);
+}
+
+/* Tema oscuro (para futuras implementaciones) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: linear-gradient(135deg, var(--pi-gray-900) 0%, var(--pi-purple-dark) 100%);
+        --bg-secondary: linear-gradient(to bottom, var(--pi-gray-800) 0%, var(--pi-gray-700) 70%, var(--pi-gray-600) 100%);
+        --dark-bg: rgba(17, 24, 39, 0.95);
+        --border-color: var(--pi-gray-600);
+    }
 }
 
 /* Utilidades */
@@ -15,23 +80,42 @@
 .hidden { display: none !important; }
 .visible { display: block !important; }
 
-/* Clases reutilizables */
+/* Clases reutilizables actualizadas */
 .game-text {
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     text-shadow: var(--text-shadow);
 }
 
 .game-button {
     background: var(--primary-color);
-    color: #000;
+    color: var(--pi-gray-900);
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     transition: var(--transition);
+    box-shadow: var(--shadow-primary);
 }
 
 .game-button:hover {
     background: var(--primary-hover);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-1px);
+}
+
+/* Efectos Pi-themed */
+.pi-glow {
+    box-shadow: var(--shadow-glow);
+}
+
+.pi-gradient-bg {
+    background: var(--bg-primary);
+}
+
+.pi-text-gradient {
+    background: linear-gradient(45deg, var(--pi-gold-primary), var(--pi-gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }

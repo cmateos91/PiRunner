@@ -5,6 +5,43 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-06-07
+
+### Added - Diseño Pi Network
+- 🎨 **Paleta de colores inspirada en Pi Network**: Diseño cohesivo sin violar marcas registradas
+- 🌈 **Sistema de variables CSS avanzado**: Colores organizados y reutilizables
+- ✨ **Efectos visuales mejorados**: Gradientes, sombras y animaciones modernas
+- 🏔️ **Nuevo sistema de renderizado**: Suelos, nubes y fondos rediseñados
+
+### Enhanced
+- 🎭 **UI moderna con glassmorphism**: Fondos translúcidos con blur
+- 🔥 **Efectos de partículas mejorados**: Animaciones más fluidas y realistas
+- 🎪 **Transiciones suavizadas**: Micro-interacciones más pulidas
+- 🌟 **Paleta de enemigos actualizada**: Colores más suaves y profesionales
+
+### Visual Improvements
+- **Fondos**: Gradientes azul-púrpura inspirados en Pi Network
+- **Suelos**: Textura moderna con detalles sutiles
+- **Nubes**: Sistema de capas múltiples con profundidad
+- **UI**: Paneles con backdrop-filter y bordes suaves
+- **Botones**: Efectos hover con ondas de luz
+- **Monedas**: Brillos dorados más sofisticados
+
+### Technical Features
+- **CSS Custom Properties**: Variables organizadas por categorías
+- **Tema oscuro preparado**: Media queries para preferencias del usuario
+- **Glassmorphism Effects**: Blur y transparencias modernas
+- **Responsive Design**: Adaptación perfecta a todos los dispositivos
+- **Performance Optimized**: Animaciones GPU-aceleradas
+
+### Color Palette
+```css
+--pi-gold-primary: #E6B800      /* Monedas Pi */
+--pi-purple-primary: #6B46C1    /* Fondos principales */  
+--pi-blue-primary: #2563EB      /* Acentos secundarios */
+--pi-gray-series: #F9FAFB...#111827 /* Escala de grises */
+```
+
 ## [1.1.0] - 2025-06-07
 
 ### Added - Enemigos Matemáticos

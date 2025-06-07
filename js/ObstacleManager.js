@@ -5,15 +5,15 @@ class ObstacleManager {
         this.isMobile = isMobile;
         this.obstacles = [];
         this.obstacleTypes = [
-            // Símbolos matemáticos enemigos de π
-            { width: 25, height: 45, type: 'sigma', symbol: 'Σ', color: '#8B0000' },      // Sumatoria
-            { width: 20, height: 50, type: 'integral', symbol: '∫', color: '#4B0082' },   // Integral
-            { width: 30, height: 40, type: 'delta', symbol: 'Δ', color: '#006400' },      // Delta
-            { width: 28, height: 48, type: 'infinity', symbol: '∞', color: '#FF4500' },   // Infinito
-            { width: 22, height: 42, type: 'alpha', symbol: 'α', color: '#800080' },      // Alpha
-            { width: 26, height: 46, type: 'beta', symbol: 'β', color: '#2F4F4F' },       // Beta
-            { width: 24, height: 44, type: 'gamma', symbol: 'γ', color: '#8B4513' },      // Gamma
-            { width: 18, height: 38, type: 'theta', symbol: 'θ', color: '#B22222' },      // Theta
+            // Símbolos matemáticos enemigos de π - colores Pi Network
+            { width: 25, height: 45, type: 'sigma', symbol: 'Σ', color: '#DC2626' },      // Rojo suave
+            { width: 20, height: 50, type: 'integral', symbol: '∫', color: '#7C3AED' },   // Púrpura suave
+            { width: 30, height: 40, type: 'delta', symbol: 'Δ', color: '#059669' },      // Verde suave
+            { width: 28, height: 48, type: 'infinity', symbol: '∞', color: '#EA580C' },   // Naranja suave
+            { width: 22, height: 42, type: 'alpha', symbol: 'α', color: '#9333EA' },      // Púrpura diferente
+            { width: 26, height: 46, type: 'beta', symbol: 'β', color: '#4B5563' },       // Gray-600
+            { width: 24, height: 44, type: 'gamma', symbol: 'γ', color: '#92400E' },      // Marrón suave
+            { width: 18, height: 38, type: 'theta', symbol: 'θ', color: '#B91C1C' },      // Rojo oscuro suave
         ];
     }
     

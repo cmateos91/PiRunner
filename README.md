@@ -1,6 +1,6 @@
 # 🪙 Pi Runner
 
-Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero protagonizado por una moneda Pi dorada. Desarrollado con tecnologías web modernas y optimizado para dispositivos móviles.
+Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero protagonizado por una moneda Pi dorada. Desarrollado con tecnologías web modernas, optimizado para dispositivos móviles y diseñado con la paleta de colores inspirada en Pi Network.
 
 ## 🎮 Características
 
@@ -12,7 +12,9 @@ Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero 
 - **Dificultad progresiva**: Velocidad, frecuencia y tipos de enemigos que aumentan gradualmente
 - **Sistema de recolección**: Monedas Pi para puntuar
 - **Arquitectura modular**: Código organizado y escalable
+- **Diseño cohesivo**: Paleta de colores inspirada en Pi Network para integración visual
 - **Temática matemática**: Guerra entre π y otros símbolos matemáticos
+- **Estética moderna**: Gradientes, sombras y efectos visuales profesionales
 
 ## 🚀 Demo
 
