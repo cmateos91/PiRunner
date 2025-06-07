@@ -22,11 +22,8 @@
         <canvas id="gameCanvas"></canvas>
         
         <div id="ui">
-            <div class="ui-scores">
-                <div>Puntos: <span id="score">0</span></div>
-                <div>Pi Coins: <span id="coins">0</span></div>
-            </div>
-            <button id="muteButton" class="audio-control">🔊</button>
+            <div>Puntos: <span id="score">0</span></div>
+            <div>Pi Coins: <span id="coins">0</span></div>
         </div>
         
         <div id="gameOver">
@@ -37,8 +34,7 @@
         </div>
     </div>
     
-    <!-- JavaScript Core Files -->
-    <script src="js/AudioManager.js"></script>
+    <!-- JavaScript Files SIN AudioManager -->
     <script src="js/ParticleSystem.js"></script>
     <script src="js/CoinFragmentSystem.js"></script>
     <script src="js/MathEnemyEffects.js"></script>
@@ -49,7 +45,6 @@
     <script src="js/InputHandler.js"></script>
     <script src="js/CollisionManager.js"></script>
     <script src="js/GameUI.js"></script>
-    <script src="js/Game.js"></script>
-    <script src="js/audio-controls.js"></script>
+    <script src="js/Game-NoAudio.js"></script>
 </body>
 </html>

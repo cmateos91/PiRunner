@@ -11,13 +11,20 @@
     border-radius: var(--border-radius-sm);
     backdrop-filter: blur(8px);
     border: 1px solid var(--pi-gray-600);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    min-width: 200px;
 }
 
-#ui div {
-    margin-bottom: 4px;
+.ui-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-#ui div:last-child {
+.ui-scores div {
     margin-bottom: 0;
 }
 
@@ -26,11 +33,50 @@
     font-weight: 700;
 }
 
+.audio-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--pi-gray-600);
+    color: var(--pi-gray-200);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.audio-control:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--pi-gold-primary);
+    border-color: var(--pi-gold-primary);
+    transform: scale(1.05);
+}
+
+.audio-control.muted {
+    color: var(--pi-red);
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--pi-red);
+}
+
 @media (max-width: 768px) {
     #ui {
         font-size: 14px;
         top: 12px;
         left: 12px;
         padding: 10px 14px;
+        gap: 16px;
+        min-width: 180px;
+    }
+    
+    .audio-control {
+        font-size: 14px;
+        min-width: 28px;
+        height: 28px;
+        padding: 4px 6px;
     }
 }

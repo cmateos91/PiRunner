@@ -15,7 +15,7 @@ class PiRunner {
         this.explosionTimer = 0;
         this.explosionDuration = 3000; // 3 segundos para ver la explosión
         
-        // Instancias de clases
+        // Instancias de clases (SIN AudioManager)
         this.player = new Player(this.width, this.height, this.isMobile());
         this.obstacleManager = new ObstacleManager(this.width, this.height, this.isMobile());
         this.coinManager = new CoinManager(this.width, this.height, this.isMobile());
@@ -23,10 +23,8 @@ class PiRunner {
         this.inputHandler = new InputHandler(this.canvas, this);
         this.particleSystem = new ParticleSystem();
         this.coinFragmentSystem = new CoinFragmentSystem();
-        this.audioManager = new AudioManager();
         
         this.setupResize();
-        this.initializeAudio();
         this.gameLoop();
     }
     
@@ -67,31 +65,6 @@ class PiRunner {
         this.renderer.updateDimensions(this.width, this.height, isMobile);
     }
     
-    initializeAudio() {
-        // Inicialización súper simple sin async/await
-        try {
-            const initAudio = () => {
-                try {
-                    this.audioManager.initializeAfterUserGesture();
-                } catch (error) {
-                    console.warn('Error inicializando audio:', error);
-                }
-                
-                // Remover listeners
-                document.removeEventListener('click', initAudio);
-                document.removeEventListener('touchstart', initAudio);
-                document.removeEventListener('keydown', initAudio);
-            };
-            
-            // Escuchar primera interacción
-            document.addEventListener('click', initAudio);
-            document.addEventListener('touchstart', initAudio);
-            document.addEventListener('keydown', initAudio);
-        } catch (error) {
-            console.warn('Error configurando audio:', error);
-        }
-    }
-    
     isMobile() {
         return window.innerWidth <= 768 || 'ontouchstart' in window;
     }
@@ -120,9 +93,6 @@ class PiRunner {
                         this.player.x + this.player.width/2,
                         this.player.y + this.player.height
                     );
-                    
-                    // Reproducir sonido de super salto
-                    this.audioManager.playSuperJumpSound();
                 } else {
                     // Salto normal con intensidad variable
                     this.particleSystem.createJumpEffect(
@@ -228,9 +198,6 @@ class PiRunner {
         // Colisiones con monedas
         const collectedCoins = this.coinManager.checkCollision(this.player);
         if (collectedCoins > 0) {
-            // Reproducir sonido de recolección
-            this.audioManager.playCoinCollectSound();
-            
             // Crear efecto de partículas por cada moneda recolectada
             this.particleSystem.createCoinCollectEffect(
                 this.player.x + this.player.width/2,
@@ -262,12 +229,6 @@ class PiRunner {
     startExplosion() {
         this.gameState = 'exploding';
         this.explosionTimer = 0;
-        
-        // Parar música de fondo inmediatamente
-        this.audioManager.stopBackgroundMusic();
-        
-        // Reproducir sonido de explosión
-        this.audioManager.playExplosionSound();
         
         // Crear explosión de fragmentos de moneda
         this.coinFragmentSystem.createExplosion(
@@ -305,11 +266,6 @@ class PiRunner {
         this.coinFragmentSystem.clear();
         this.inputHandler.reset();
         
-        // Reiniciar música de fondo si no está muteado
-        if (!this.audioManager.isMuted) {
-            this.audioManager.playBackgroundMusic();
-        }
-        
         GameUI.hideGameOver();
     }
     
@@ -322,5 +278,5 @@ class PiRunner {
 
 // Inicializar juego
 const game = new PiRunner();
-// Hacer game accesible globalmente para controles de audio
+// Hacer game accesible globalmente
 window.game = game;
