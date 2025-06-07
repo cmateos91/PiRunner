@@ -1,9 +1,9 @@
 // Debug API to test Redis connection
 import { Redis } from '@upstash/redis';
 
-// Manual Redis configuration
+// REST API configuration
 const redis = new Redis({
-  url: 'https://redis-18507.crce202.eu-west-3-1.ec2.redns.redis-cloud.com:18507',
+  url: 'https://redis-18507.crce202.eu-west-3-1.ec2.redns.redis-cloud.com',
   token: process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN,
 });
 
