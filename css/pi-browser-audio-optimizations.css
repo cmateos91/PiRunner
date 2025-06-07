@@ -1,0 +1,192 @@
+/* Optimizaciones específicas para Pi Browser - Audio y Performance */
+
+/* Optimizaciones base para Pi Browser */
+.pi-browser-optimized {
+    /* Mejorar rendering y reducir latencia */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+}
+
+.pi-browser-optimized * {
+    /* Prevenir delays de touch */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Optimizar fonts */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.pi-browser-optimized canvas {
+    /* Hardware acceleration para canvas */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+/* Optimizaciones específicas para elementos de audio */
+.pi-browser-optimized audio {
+    /* Configuración para reproducción rápida */
+    -webkit-playsinline: true;
+    playsinline: true;
+}
+
+/* Optimizaciones para elementos UI que pueden causar latency */
+.pi-browser-optimized .ui-controls,
+.pi-browser-optimized .language-option,
+.pi-browser-optimized .audio-control {
+    /* Eliminar delays de touch */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimizar transiciones para mejor rendimiento en Pi Browser */
+.pi-browser-optimized .language-option,
+.pi-browser-optimized .audio-control {
+    transition-duration: 0.1s; /* Transiciones más rápidas */
+    will-change: transform, opacity;
+}
+
+/* Optimizaciones para partículas y efectos */
+.pi-browser-optimized .particle,
+.pi-browser-optimized .coin-fragment,
+.pi-browser-optimized .explosion-effect {
+    /* Optimizar animaciones */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
+    animation-fill-mode: forwards;
+}
+
+/* Optimizaciones para modal y overlays */
+.pi-browser-optimized .leaderboard-modal,
+.pi-browser-optimized #gameOver {
+    /* Mejorar rendering de overlays */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Optimizaciones específicas para elementos que pueden causar audio latency */
+.pi-browser-optimized #ui {
+    /* Prevenir reflows que afecten audio */
+    contain: layout style paint;
+}
+
+/* Media queries específicas para Pi Browser móvil */
+@media screen and (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+    .pi-browser-optimized {
+        /* Optimizaciones adicionales para pantallas de alta densidad */
+        -webkit-font-feature-settings: "liga" off;
+        font-feature-settings: "liga" off;
+    }
+    
+    .pi-browser-optimized canvas {
+        /* Reducir anti-aliasing en móviles para mejor performance */
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Optimizaciones para orientación landscape en Pi Browser */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .pi-browser-optimized #ui {
+        /* Compactar UI para mejor rendimiento */
+        transform: scale(0.9);
+        transform-origin: top left;
+    }
+}
+
+/* Clases específicas para debugging de audio en Pi Browser */
+.audio-debug-mode .pi-browser-optimized {
+    /* Visual feedback para debugging */
+    outline: 2px dashed rgba(251, 191, 36, 0.3);
+}
+
+.audio-debug-mode .audio-control {
+    /* Highlight controles de audio durante debug */
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+/* Optimizaciones para reducir paint/layout thrashing */
+.pi-browser-optimized .temp-notification,
+.pi-browser-optimized .payment-notification {
+    /* Optimizar notificaciones */
+    will-change: transform, opacity;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* Configuraciones específicas para mejorar audio timing */
+.pi-browser-optimized {
+    /* Prevenir scroll bouncing que puede afectar audio */
+    -webkit-overflow-scrolling: auto;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* Optimizar elementos de juego para mejor sincronización audio */
+.pi-browser-optimized #gameCanvas {
+    /* Configuración específica para canvas de juego */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    
+    /* Importante: esto ayuda con la sincronización audio-visual */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Asegurar que los elementos no interfieran con el contexto de audio */
+.pi-browser-optimized button,
+.pi-browser-optimized .clickable {
+    /* Configuración para elementos interactivos */
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: none;
+    outline: none;
+    
+    /* Timing optimizado para no interferir con audio */
+    transition-timing-function: linear;
+}
+
+/* Configuración específica para el selector de idioma en Pi Browser */
+.pi-browser-optimized .language-option:active {
+    /* Feedback inmediato sin delays */
+    transform: scale(0.95) translateZ(0);
+    transition-duration: 0.05s;
+}
+
+/* Optimización final para todo el viewport en Pi Browser */
+.pi-browser-optimized body {
+    /* Configuración del viewport para mejor rendimiento */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    
+    /* Importante para audio: prevenir scrolling y zoom */
+    touch-action: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}

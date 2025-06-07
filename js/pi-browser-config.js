@@ -1,104 +1,182 @@
-// Configuración simplificada para Pi Browser - versión debug
-console.log('🥧 Cargando configuración de Pi Browser...');
+// Configuración específica para Pi Browser - Audio optimizado
+console.log('🔧 Cargando configuración optimizada para Pi Browser');
 
-try {
-    // Configuración básica
-    window.PI_BROWSER_CONFIG = {
-        audio: {
-            poolSizes: {
-                critical: 1,
-                frequent: 2,
-                occasional: 1
-            },
-            volumes: {
-                master: 0.7,
-                effects: 0.4,
-                music: 0.15,
-                coins: 0.3
-            }
-        },
-        performance: {
-            targetFPS: 30,
-            particles: {
-                max: 15,
-                coinEffect: 3,
-                jumpEffect: 2,
-                superJump: 4
-            }
-        }
-    };
+// Detectar Pi Browser con múltiples métodos
+const isPiBrowser = (() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const hostname = window.location.hostname.toLowerCase();
     
-    console.log('🥧 Configuración base creada');
+    // Detectores específicos
+    const piBrowserSignatures = [
+        'pibrowser',
+        'pi browser',
+        'pinetwork',
+        'pi network'
+    ];
     
-    // Función de detección simplificada
-    window.isPiBrowser = function() {
-        try {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const hostname = window.location.hostname.toLowerCase();
-            
-            const isPi = userAgent.includes('pi browser') || 
-                        userAgent.includes('pinetwork') ||
-                        hostname.includes('pinet.com') ||
-                        hostname.includes('sandbox.minepi.com');
-            
-            console.log('🥧 Detección Pi Browser:', { userAgent: userAgent.substring(0, 50), hostname, isPi });
-            return isPi;
-        } catch (error) {
-            console.error('❌ Error detectando Pi Browser:', error);
-            return false;
-        }
-    };
+    const piDomainSignatures = [
+        'minepi.com',
+        'pi.app',
+        'sandbox.minepi.com',
+        'pinet.com'
+    ];
     
-    // Aplicar configuraciones si es Pi Browser
-    if (window.isPiBrowser()) {
-        console.log('🥧 Pi Browser detectado - aplicando optimizaciones');
-        window.IS_PI_BROWSER = true;
-        window.AUDIO_CONFIG = window.PI_BROWSER_CONFIG.audio;
-        window.PERFORMANCE_CONFIG = window.PI_BROWSER_CONFIG.performance;
-        
-        // Agregar clase CSS para optimizaciones específicas
-        document.addEventListener('DOMContentLoaded', () => {
-            document.body.classList.add('pi-browser');
-            console.log('🥧 Clase CSS pi-browser aplicada');
+    const isUserAgentMatch = piBrowserSignatures.some(signature => 
+        userAgent.includes(signature)
+    );
+    
+    const isDomainMatch = piDomainSignatures.some(domain => 
+        hostname.includes(domain)
+    );
+    
+    // Detectar características típicas de Pi Browser
+    const isMobileWebkit = userAgent.includes('mobile') && userAgent.includes('webkit');
+    const hasVirtualKeyboard = 'virtualKeyboard' in navigator;
+    
+    return isUserAgentMatch || isDomainMatch || (isMobileWebkit && hasVirtualKeyboard);
+})();
+
+// Configuración de audio específica para Pi Browser
+const PiBrowserAudioConfig = {
+    // Configuración para reducir latencia
+    audioBufferSize: isPiBrowser ? 512 : 1024,
+    preloadStrategy: isPiBrowser ? 'immediate' : 'lazy',
+    poolSize: isPiBrowser ? 3 : 1,
+    useWebAudio: isPiBrowser && !!(window.AudioContext || window.webkitAudioContext),
+    
+    // Volúmenes optimizados
+    volumes: {
+        effects: isPiBrowser ? 0.5 : 0.3,
+        music: isPiBrowser ? 0.2 : 0.1,
+        coins: isPiBrowser ? 0.4 : 0.3
+    },
+    
+    // Formatos prioritarios
+    preferredFormats: isPiBrowser ? ['wav', 'mp3'] : ['mp3', 'wav'],
+    
+    // Configuración de precarga
+    preloadOnInit: isPiBrowser,
+    aggressivePreload: isPiBrowser,
+    
+    // Configuraciones específicas para reducir latencia
+    fastPlayback: isPiBrowser,
+    immediatePlay: isPiBrowser,
+    poolRotation: isPiBrowser
+};
+
+// Optimizaciones específicas para Pi Browser
+if (isPiBrowser) {
+    console.log('🔧 Aplicando optimizaciones para Pi Browser');
+    
+    // Configurar audio para reproducción inline
+    document.addEventListener('DOMContentLoaded', () => {
+        // Aplicar configuraciones de audio
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+            audio.setAttribute('playsinline', true);
+            audio.setAttribute('webkit-playsinline', true);
+            audio.setAttribute('x-webkit-airplay', 'deny');
+            audio.preload = 'auto';
         });
         
-    } else {
-        console.log('🌐 Navegador estándar detectado');
-        window.IS_PI_BROWSER = false;
-    }
+        // Aplicar clase CSS para Pi Browser
+        document.body.classList.add('pi-browser-optimized');
+        
+        // Optimizar viewport
+        const metaViewport = document.querySelector('meta[name="viewport"]');
+        if (metaViewport) {
+            metaViewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no';
+        }
+    });
     
-    // Función de debug simplificada
-    window.debugAudio = function() {
-        try {
-            console.log('🎵 Debug de Audio:', {
-                isPiBrowser: window.IS_PI_BROWSER,
-                audioConfig: window.AUDIO_CONFIG,
-                gameExists: !!window.game,
-                audioManagerExists: !!(window.game && window.game.audioManager)
-            });
-            
-            if (window.game && window.game.audioManager) {
-                const am = window.game.audioManager;
-                console.log('🎵 Estado AudioManager:', {
-                    isMuted: am.isMuted,
-                    isLowPerformance: am.isLowPerformanceMode,
-                    isInitialized: am.isInitialized
-                });
+    // Prevenir comportamientos que causan latencia
+    document.addEventListener('touchstart', (e) => {
+        // Prevenir zoom accidental
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Optimizar para reproducción de audio rápida
+    window.addEventListener('load', () => {
+        // Crear contexto de audio lo antes posible
+        if (window.AudioContext || window.webkitAudioContext) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                window.globalAudioContext = audioContext;
+                
+                // Forzar inicio del contexto
+                const resumeAudio = () => {
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    document.removeEventListener('touchstart', resumeAudio);
+                    document.removeEventListener('click', resumeAudio);
+                };
+                
+                document.addEventListener('touchstart', resumeAudio, { once: true });
+                document.addEventListener('click', resumeAudio, { once: true });
+                
+                console.log('🔧 AudioContext global creado para Pi Browser');
+            } catch (error) {
+                console.warn('⚠️ Error creando AudioContext:', error);
             }
-        } catch (error) {
-            console.error('❌ Error en debugAudio:', error);
+        }
+    });
+}
+
+// Función para verificar capacidades específicas de audio
+function checkAudioCapabilities() {
+    const capabilities = {
+        webAudio: !!(window.AudioContext || window.webkitAudioContext),
+        htmlAudio: !!window.Audio,
+        formats: {
+            wav: (new Audio()).canPlayType('audio/wav') !== '',
+            mp3: (new Audio()).canPlayType('audio/mpeg') !== '',
+            ogg: (new Audio()).canPlayType('audio/ogg') !== ''
+        },
+        features: {
+            playsinline: 'playsinline' in document.createElement('audio'),
+            autoplay: false // Se detectará dinámicamente
         }
     };
     
-    console.log('🥧 Configuración de Pi Browser cargada exitosamente');
+    // Test de autoplay
+    const testAudio = new Audio();
+    testAudio.volume = 0.01;
+    testAudio.src = 'data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ4AAAC';
+    testAudio.play().then(() => {
+        capabilities.features.autoplay = true;
+    }).catch(() => {
+        capabilities.features.autoplay = false;
+    });
     
-} catch (error) {
-    console.error('❌ Error fatal cargando configuración Pi Browser:', error);
-    
-    // Crear configuración mínima de emergencia
-    window.IS_PI_BROWSER = false;
-    window.debugAudio = () => console.log('Debug audio no disponible');
-    window.isPiBrowser = () => false;
+    console.log('🔧 Capacidades de audio:', capabilities);
+    return capabilities;
 }
 
-console.log('🥧 Script de configuración Pi Browser terminado');
+// Configuración de rendimiento para Pi Browser
+const PiBrowserPerformanceConfig = {
+    targetFPS: isPiBrowser ? 45 : 60, // FPS ligeramente reducido para estabilidad
+    audioLatency: isPiBrowser ? 'low' : 'normal',
+    particleOptimization: isPiBrowser,
+    memoryManagement: isPiBrowser ? 'aggressive' : 'normal'
+};
+
+// Exponer configuraciones globalmente
+window.isPiBrowser = isPiBrowser;
+window.PiBrowserAudioConfig = PiBrowserAudioConfig;
+window.PiBrowserPerformanceConfig = PiBrowserPerformanceConfig;
+window.audioCapabilities = checkAudioCapabilities();
+
+// Función de debug para audio
+window.debugPiBrowserAudio = () => {
+    console.log('🎵 Debug Pi Browser Audio:', {
+        isPiBrowser,
+        audioConfig: PiBrowserAudioConfig,
+        capabilities: window.audioCapabilities,
+        globalAudioContext: !!window.globalAudioContext
+    });
+};
+
+console.log(`🔧 Configuración completada - Pi Browser: ${isPiBrowser ? 'SÍ' : 'NO'}`);
