@@ -1,0 +1,165 @@
+/* Estilos específicos para Pi Browser */
+
+/* Cuando se detecta Pi Browser, aplicar optimizaciones máximas */
+body.pi-browser {
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+body.pi-browser #gameContainer {
+    width: 100vw;
+    height: 90vh;
+    border: none;
+    border-radius: 0;
+    max-width: none;
+    max-height: none;
+}
+
+body.pi-browser #ui {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    padding: 4px 6px;
+    font-size: 10px;
+    gap: 6px;
+    background: rgba(31, 41, 55, 0.9);
+    backdrop-filter: blur(4px);
+}
+
+body.pi-browser .ui-scores {
+    gap: 6px;
+}
+
+body.pi-browser .ui-scores div {
+    font-size: 10px;
+}
+
+body.pi-browser .audio-control {
+    font-size: 12px;
+    min-width: 22px;
+    height: 22px;
+    padding: 2px;
+}
+
+/* Game Over modal optimizado para Pi Browser */
+body.pi-browser #gameOver {
+    padding: 12px;
+    margin: 8px;
+    max-width: calc(100vw - 16px);
+}
+
+body.pi-browser #gameOver h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+body.pi-browser #gameOver p {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+body.pi-browser .game-over-buttons {
+    gap: 8px;
+}
+
+body.pi-browser .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+body.pi-browser .secondary-buttons {
+    gap: 6px;
+}
+
+/* Leaderboard optimizado para Pi Browser */
+body.pi-browser .leaderboard-modal {
+    padding: 8px;
+}
+
+body.pi-browser .leaderboard-content {
+    max-width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    margin: 8px auto;
+}
+
+body.pi-browser .leaderboard-title {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+body.pi-browser .leaderboard-item {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+/* Notificaciones Pi más compactas */
+body.pi-browser .payment-notification,
+body.pi-browser .temp-notification {
+    top: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+/* Optimizaciones específicas para orientación */
+@media (orientation: portrait) {
+    body.pi-browser #gameContainer {
+        height: 85vh;
+    }
+    
+    body.pi-browser #ui {
+        font-size: 9px;
+    }
+    
+    body.pi-browser .ui-scores div {
+        font-size: 9px;
+    }
+}
+
+@media (orientation: landscape) {
+    body.pi-browser #gameContainer {
+        height: 92vh;
+        width: 100vw;
+    }
+}
+
+/* Para pantallas muy pequeñas en Pi Browser */
+@media (max-width: 360px) {
+    body.pi-browser #ui {
+        font-size: 8px;
+        padding: 2px 4px;
+    }
+    
+    body.pi-browser .ui-scores div {
+        font-size: 8px;
+    }
+    
+    body.pi-browser .audio-control {
+        font-size: 10px;
+        min-width: 20px;
+        height: 20px;
+    }
+}
+
+/* Animaciones más suaves en Pi Browser */
+body.pi-browser * {
+    transition-duration: 0.1s !important;
+}
+
+body.pi-browser .audio-control:hover {
+    transform: none; /* Eliminar hover effects para mejor rendimiento */
+}
+
+body.pi-browser .btn:hover {
+    transform: none;
+}
+
+/* Canvas optimizado para Pi Browser */
+body.pi-browser #gameCanvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: pixelated;
+    image-rendering: optimizeSpeed;
+}

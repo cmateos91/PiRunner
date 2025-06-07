@@ -39,8 +39,8 @@ class PiRunner {
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         
-        // Configurar para pantallas de alta densidad
-        const dpr = window.devicePixelRatio || 1;
+        // Configurar para pantallas de alta densidad, pero limitado en Pi Browser
+        const dpr = window.IS_PI_BROWSER ? 1 : (window.devicePixelRatio || 1);
         if (dpr > 1) {
             this.canvas.width = rect.width * dpr;
             this.canvas.height = rect.height * dpr;
@@ -48,6 +48,8 @@ class PiRunner {
             this.canvas.style.height = rect.height + 'px';
             this.ctx.scale(dpr, dpr);
         }
+        
+        console.log(`🎮 Canvas configurado: ${this.width}x${this.height}, DPR: ${dpr}`);
     }
     
     setupResize() {

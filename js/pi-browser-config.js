@@ -55,6 +55,13 @@ try {
         window.IS_PI_BROWSER = true;
         window.AUDIO_CONFIG = window.PI_BROWSER_CONFIG.audio;
         window.PERFORMANCE_CONFIG = window.PI_BROWSER_CONFIG.performance;
+        
+        // Agregar clase CSS para optimizaciones específicas
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('pi-browser');
+            console.log('🥧 Clase CSS pi-browser aplicada');
+        });
+        
     } else {
         console.log('🌐 Navegador estándar detectado');
         window.IS_PI_BROWSER = false;

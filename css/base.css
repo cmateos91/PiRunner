@@ -14,4 +14,50 @@ body {
     overflow: hidden;
     touch-action: manipulation;
     color: var(--pi-gray-100);
+    /* Eliminar márgenes en móvil */
+    padding: 0;
+}
+
+/* Optimización para móviles */
+@media (max-width: 768px) {
+    body {
+        align-items: flex-start;
+        padding: 4px 0;
+        min-height: 100vh;
+        height: 100vh;
+    }
+}
+
+/* Para Pi Browser y móviles pequeños */
+@media (max-width: 480px) {
+    body {
+        padding: 0;
+        align-items: stretch;
+    }
+}
+
+/* Prevenir zoom en móviles */
+@media (max-width: 768px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+    
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Optimización para viewport en Pi Browser */
+@supports (-webkit-touch-callout: none) {
+    body {
+        /* iOS Safari specific optimizations */
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+    }
 }
