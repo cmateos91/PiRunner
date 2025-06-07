@@ -1,0 +1,36 @@
+{
+  "name": "pi-runner",
+  "version": "1.0.0",
+  "description": "Un juego de runner infinito protagonizado por una moneda Pi dorada",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server --port=8080 --open=/",
+    "serve": "python -m http.server 8000",
+    "dev": "npx live-server --port=3000 --open=/"
+  },
+  "keywords": [
+    "game",
+    "runner",
+    "pi-network",
+    "html5",
+    "canvas",
+    "javascript",
+    "mobile-friendly"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/pi-runner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/pi-runner/issues"
+  },
+  "homepage": "https://tu-usuario.github.io/pi-runner/",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

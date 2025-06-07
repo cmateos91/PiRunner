@@ -1,0 +1,37 @@
+/* Variables CSS para consistencia */
+:root {
+    --primary-color: #FFC72C;
+    --primary-hover: #FFD700;
+    --secondary-color: #667eea;
+    --dark-bg: rgba(0,0,0,0.9);
+    --border-color: #333;
+    --text-shadow: 2px 2px 0px #000;
+    --border-radius: 10px;
+    --transition: all 0.3s ease;
+}
+
+/* Utilidades */
+.text-center { text-align: center; }
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+/* Clases reutilizables */
+.game-text {
+    color: white;
+    font-weight: bold;
+    text-shadow: var(--text-shadow);
+}
+
+.game-button {
+    background: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: var(--transition);
+}
+
+.game-button:hover {
+    background: var(--primary-hover);
+}

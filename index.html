@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pi Runner</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/game-container.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/effects.css">
+    <link rel="stylesheet" href="css/explosion-effects.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui">
+            <div>Puntos: <span id="score">0</span></div>
+            <div>Pi Coins: <span id="coins">0</span></div>
+        </div>
+        
+        <div id="gameOver">
+            <h2>¡Juego Terminado!</h2>
+            <p>Puntuación: <span id="finalScore">0</span></p>
+            <p>Pi Coins: <span id="finalCoins">0</span></p>
+            <button class="btn" onclick="game.restart()">Reiniciar</button>
+        </div>
+        
+        <div id="instructions">
+            Toca la pantalla o presiona ESPACIO para saltar
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="js/ParticleSystem.js"></script>
+    <script src="js/CoinFragmentSystem.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/ObstacleManager.js"></script>
+    <script src="js/CoinManager.js"></script>
+    <script src="js/Renderer.js"></script>
+    <script src="js/InputHandler.js"></script>
+    <script src="js/CollisionManager.js"></script>
+    <script src="js/GameUI.js"></script>
+    <script src="js/Game.js"></script>
+</body>
+</html>
