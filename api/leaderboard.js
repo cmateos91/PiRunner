@@ -1,4 +1,6 @@
 // Leaderboard API - Get scores with persistent storage
+import ScoreStorage from '../lib/ScoreStorage.js';
+
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,7 +19,7 @@ export default async function handler(req, res) {
       const { type = 'allTime', limit = 10 } = req.query;
       console.log('Query params:', { type, limit });
       
-      const scores = await getScores(type, parseInt(limit));
+      const scores = await ScoreStorage.getScores(type, parseInt(limit));
       console.log(`Found ${scores.length} scores`);
       
       return res.status(200).json({
@@ -56,7 +58,7 @@ export default async function handler(req, res) {
 
       console.log('New score object:', newScore);
 
-      await saveScore(newScore);
+      await ScoreStorage.addScore(newScore);
       console.log('Score saved successfully');
 
       return res.status(200).json({
@@ -76,79 +78,6 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
-
-// Simple persistent storage using global variable + file simulation
-// For production, replace with real database (Vercel KV, MongoDB, etc.)
-
-async function initializeStorage() {
-  if (!global.globalScoresStorage) {
-    console.log('Initializing global scores storage...');
-    global.globalScoresStorage = [];
-    console.log('Global storage initialized');
-  }
-  return global.globalScoresStorage;
-}
-
-async function getScores(type = 'allTime', limit = 10) {
-  console.log(`Getting scores for type: ${type}, limit: ${limit}`);
-  
-  const storage = await initializeStorage();
-  console.log(`Total scores in global storage: ${storage.length}`);
-  
-  // Filter by time period
-  let filteredScores = [...storage];
-  
-  const now = new Date();
-  
-  if (type === 'daily') {
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    filteredScores = storage.filter(s => new Date(s.timestamp) > yesterday);
-    console.log(`Daily scores: ${filteredScores.length}`);
-  } else if (type === 'weekly') {
-    const lastWeek = new Date(now);
-    lastWeek.setDate(lastWeek.getDate() - 7);
-    filteredScores = storage.filter(s => new Date(s.timestamp) > lastWeek);
-    console.log(`Weekly scores: ${filteredScores.length}`);
-  } else if (type === 'monthly') {
-    const lastMonth = new Date(now);
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    filteredScores = storage.filter(s => new Date(s.timestamp) > lastMonth);
-    console.log(`Monthly scores: ${filteredScores.length}`);
-  }
-
-  // Sort by score descending and limit
-  const result = filteredScores
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map((score, index) => ({
-      ...score,
-      rank: index + 1
-    }));
-
-  console.log(`Returning ${result.length} scores for ${type}`);
-  return result;
-}
-
-async function saveScore(scoreData) {
-  console.log('Saving score to global storage:', scoreData);
-  
-  const storage = await initializeStorage();
-  
-  // Check if score already exists (prevent duplicates)
-  const existingIndex = storage.findIndex(s => s.paymentId === scoreData.paymentId);
-  
-  if (existingIndex >= 0) {
-    console.log('Score already exists, updating...');
-    storage[existingIndex] = scoreData;
-  } else {
-    console.log('Adding new score...');
-    storage.push(scoreData);
-  }
-  
-  console.log(`Global storage now has ${storage.length} total scores`);
-  return scoreData;
 }
 
 function generateScoreId() {

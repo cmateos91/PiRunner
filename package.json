@@ -12,6 +12,6 @@
   "author": "Tu nombre",
   "license": "MIT",
   "dependencies": {
-    "@vercel/kv": "^1.0.0"
+    "@vercel/kv": "^1.0.1"
   }
 }

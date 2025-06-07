@@ -1,6 +1,8 @@
 // Pi Network Backend Integration
 // API Functions for Vercel Serverless
 
+import ScoreStorage from '../lib/ScoreStorage.js';
+
 const PI_API_KEY = 'odukea0zelpnbewox9feh6ovr3nti06egwfyzkkekhkyzbunamixhuibj0fers5k';
 const PI_API_BASE = 'https://api.minepi.com/v2';
 
@@ -155,7 +157,7 @@ async function saveScoreToLeaderboard(payment) {
 // Función para guardar directamente sin HTTP
 async function saveScoreDirectly(paymentData, userInfo) {
   try {
-    console.log('Saving score directly...');
+    console.log('Saving score directly to persistent storage...');
     
     const newScore = {
       id: generateScoreId(),
@@ -172,36 +174,15 @@ async function saveScoreDirectly(paymentData, userInfo) {
 
     console.log('New score object:', newScore);
 
-    // Guardar en storage global
-    await saveScoreToGlobalStorage(newScore);
-    console.log('Score saved to global storage successfully');
+    // Guardar usando ScoreStorage persistente
+    await ScoreStorage.addScore(newScore);
+    console.log('Score saved to persistent storage successfully');
 
     return newScore;
   } catch (error) {
     console.error('Error in direct save:', error);
     throw error;
   }
-}
-
-// Storage global compartido entre funciones
-global.globalScoresStorage = global.globalScoresStorage || [];
-
-async function saveScoreToGlobalStorage(scoreData) {
-  console.log('Saving to global storage:', scoreData);
-  
-  // Check if score already exists (prevent duplicates)
-  const existingIndex = global.globalScoresStorage.findIndex(s => s.paymentId === scoreData.paymentId);
-  
-  if (existingIndex >= 0) {
-    console.log('Score already exists, updating...');
-    global.globalScoresStorage[existingIndex] = scoreData;
-  } else {
-    console.log('Adding new score...');
-    global.globalScoresStorage.push(scoreData);
-  }
-  
-  console.log(`Global storage now has ${global.globalScoresStorage.length} total scores`);
-  return scoreData;
 }
 
 function generateScoreId() {
