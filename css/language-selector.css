@@ -1,75 +1,85 @@
-/* Selector de idioma */
+/* Selector de idioma - Nueva posición en el UI superior */
 #languageSelector {
-    position: fixed;
-    top: 50%;
-    left: 4px;
-    transform: translateY(-50%);
-    background: rgba(31, 41, 55, 0.9);
-    border: 1px solid var(--pi-gray-600);
-    border-radius: 6px;
-    padding: 4px;
-    z-index: 1002;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    backdrop-filter: blur(8px);
+    gap: 4px;
+    align-items: center;
 }
 
 .language-option {
-    background: transparent;
-    border: none;
+    background: rgba(31, 41, 55, 0.8);
+    border: 1px solid var(--pi-gray-600);
     color: var(--pi-gray-300);
-    padding: 4px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: 600;
     transition: all 0.2s;
-    min-width: 32px;
+    min-width: 28px;
     text-align: center;
+    backdrop-filter: blur(4px);
 }
 
 .language-option:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     color: var(--pi-gold-primary);
+    border-color: var(--pi-gold-primary);
+    transform: translateY(-1px);
 }
 
 .language-option.active {
     background: var(--pi-gold-primary);
     color: var(--pi-gray-900);
-    font-weight: 600;
+    border-color: var(--pi-gold-primary);
+    box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
 }
 
 .language-option:active {
     transform: scale(0.95);
 }
 
-/* Para móviles, hacer el selector más pequeño */
+/* Ajustes para el contenedor UI */
+.ui-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Para móviles, hacer selector aún más compacto */
 @media (max-width: 768px) {
-    #languageSelector {
-        left: 2px;
-        padding: 2px;
+    .language-option {
+        font-size: 9px;
+        padding: 3px 6px;
+        min-width: 24px;
     }
     
-    .language-option {
-        font-size: 10px;
-        padding: 3px 4px;
-        min-width: 28px;
+    #languageSelector {
+        gap: 2px;
+    }
+    
+    .ui-controls {
+        gap: 6px;
     }
 }
 
-/* En modo landscape móvil, mover a la esquina */
+/* En modo landscape móvil, mantener en línea */
 @media (orientation: landscape) and (max-height: 500px) {
+    .language-option {
+        font-size: 8px;
+        padding: 2px 4px;
+        min-width: 20px;
+    }
+    
     #languageSelector {
-        top: 8px;
-        left: 8px;
-        transform: none;
-        flex-direction: row;
+        gap: 1px;
     }
 }
 
-/* Ocultar en pantallas muy pequeñas si es necesario */
+/* Para pantallas muy pequeñas, mostrar solo iniciales */
 @media (max-width: 320px) {
-    #languageSelector {
-        display: none;
+    .language-option {
+        font-size: 8px;
+        padding: 2px 4px;
+        min-width: 18px;
     }
 }

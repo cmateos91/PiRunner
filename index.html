@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/pi-browser-optimizations.css">
     <link rel="stylesheet" href="css/ad-space.css">
     <link rel="stylesheet" href="css/language-selector.css">
+    <link rel="stylesheet" href="css/input-feedback.css">
     
     <!-- Pi Network SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -34,7 +35,15 @@
                 <div><span data-i18n="game.points">Puntos</span>: <span id="score">0</span></div>
                 <div><span data-i18n="game.coins">Pi Coins</span>: <span id="coins">0</span></div>
             </div>
-            <button id="muteButton" class="audio-control" data-i18n-title="audio.mute">🔊</button>
+            <div class="ui-controls">
+                <button id="muteButton" class="audio-control" data-i18n-title="audio.mute">🔊</button>
+                <!-- Selector de idioma movido aquí -->
+                <div id="languageSelector">
+                    <button class="language-option" data-lang="en" onclick="changeLanguage('en')" title="English">EN</button>
+                    <button class="language-option" data-lang="es" onclick="changeLanguage('es')" title="Español">ES</button>
+                    <button class="language-option" data-lang="hi" onclick="changeLanguage('hi')" title="हिंदी">HI</button>
+                </div>
+            </div>
         </div>
         
         <div id="gameOver">
@@ -62,12 +71,10 @@
             📺
         </button>
         
-        <!-- Selector de idioma -->
-        <div id="languageSelector">
-            <button class="language-option" data-lang="en" onclick="changeLanguage('en')" title="English">🇺🇸</button>
-            <button class="language-option" data-lang="es" onclick="changeLanguage('es')" title="Español">🇪🇸</button>
-            <button class="language-option" data-lang="hi" onclick="changeLanguage('hi')" title="हिंदी">🇮🇳</button>
-        </div>
+        <!-- Indicador de input para debugging -->
+        <div id="inputFeedback" class="input-feedback"></div>
+        
+        <!-- Selector de idioma removido de aquí -->
     </div>
     
     <!-- JavaScript Core Files -->
@@ -93,5 +100,8 @@
     <script src="js/game-over-functions.js"></script>
     <script src="js/language-selector.js"></script>
     <script src="js/translation-test.js"></script>
+    <script src="js/layout-test.js"></script>
+    <script src="js/fullscreen-input-test.js"></script>
+    <script src="js/input-feedback.js"></script>
 </body>
 </html>

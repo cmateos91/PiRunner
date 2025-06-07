@@ -31,6 +31,13 @@
     white-space: nowrap;
 }
 
+.ui-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
 #score, #coins {
     color: var(--pi-gold-primary);
     font-weight: 700;
@@ -88,16 +95,20 @@
         left: 4px;
         right: 4px;
         padding: 6px 10px;
-        gap: 10px;
+        gap: 8px;
         border-radius: 6px;
     }
     
     .ui-scores {
-        gap: 12px;
+        gap: 10px;
     }
     
     .ui-scores div {
         font-size: 12px;
+    }
+    
+    .ui-controls {
+        gap: 6px;
     }
     
     .audio-control {
@@ -116,15 +127,19 @@
         left: 2px;
         right: 2px;
         padding: 4px 8px;
-        gap: 8px;
+        gap: 6px;
     }
     
     .ui-scores {
-        gap: 8px;
+        gap: 6px;
     }
     
     .ui-scores div {
         font-size: 11px;
+    }
+    
+    .ui-controls {
+        gap: 4px;
     }
     
     .audio-control {
