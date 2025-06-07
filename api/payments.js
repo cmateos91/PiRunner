@@ -85,12 +85,12 @@ export default async function handler(req, res) {
         console.log(`Completing payment: ${paymentId} with txid: ${txid}`);
         result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid });
 
-        // TODO: Save score to database here
-        await saveScoreToDatabase(result);
+        // Guardar score en leaderboard después de completar pago
+        await saveScoreToLeaderboard(result);
 
         return res.status(200).json({
           success: true,
-          message: 'Payment completed and score saved',
+          message: 'Payment completed and score saved to leaderboard',
           payment: result
         });
 
@@ -121,10 +121,10 @@ export default async function handler(req, res) {
   }
 }
 
-// Save score to database (placeholder)
-async function saveScoreToDatabase(payment) {
+// Save score to leaderboard after successful payment
+async function saveScoreToLeaderboard(payment) {
   try {
-    console.log('Saving score to database:', {
+    console.log('Saving score to leaderboard:', {
       paymentId: payment.identifier,
       userUid: payment.user_uid,
       score: payment.metadata?.score,
@@ -132,10 +132,48 @@ async function saveScoreToDatabase(payment) {
       timestamp: payment.metadata?.timestamp
     });
 
-    // TODO: Implement actual database storage
-    // For now, just log to console
+    // Get user info from Pi API
+    const userInfo = await getUserInfo(payment.user_uid);
+
+    // Call leaderboard API to save score
+    const response = await fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/leaderboard`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        paymentData: payment,
+        userInfo: userInfo
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Leaderboard API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Score saved to leaderboard successfully:', result);
     
   } catch (error) {
-    console.error('Error saving score:', error);
+    console.error('Error saving score to leaderboard:', error);
+    // Don't throw error - payment should still complete even if leaderboard fails
+  }
+}
+
+// Get user info for leaderboard
+async function getUserInfo(userUid) {
+  try {
+    // For now, return basic info
+    // TODO: Get actual user info from Pi API if available
+    return {
+      username: `user_${userUid.substr(-8)}`, // Use last 8 chars of UID as temp username
+      uid: userUid
+    };
+  } catch (error) {
+    console.error('Error getting user info:', error);
+    return {
+      username: `user_${userUid.substr(-8)}`,
+      uid: userUid
+    };
   }
 }

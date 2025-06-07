@@ -23,11 +23,21 @@ async function initializePiNetwork() {
 }
 
 async function showLeaderboard() {
-    console.log('Mostrar clasificación');
+    console.log('Mostrando clasificación');
     
-    // TODO: Implementar cuando tengamos backend
-    // Por ahora mostrar mensaje temporal
-    showTempMessage('🏆 Clasificación próximamente disponible', 'info');
+    try {
+        showTempMessage('📊 Cargando clasificación...', 'info');
+        
+        // Crear modal del leaderboard
+        createLeaderboardModal();
+        
+        // Cargar scores
+        await loadLeaderboardData('allTime');
+        
+    } catch (error) {
+        console.error('Error mostrando leaderboard:', error);
+        showTempMessage('❌ Error cargando clasificación', 'error');
+    }
 }
 
 async function saveScore() {
@@ -126,3 +136,137 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Inicializando Pi Runner con Pi Network...');
     initializePiNetwork();
 });
+
+// Funciones del leaderboard
+function createLeaderboardModal() {
+    // Verificar si ya existe
+    if (document.getElementById('leaderboardModal')) {
+        document.getElementById('leaderboardModal').style.display = 'flex';
+        return;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'leaderboardModal';
+    modal.className = 'leaderboard-modal';
+    
+    modal.innerHTML = `
+        <div class="leaderboard-content">
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">🏆 Clasificación</h2>
+                <button class="close-leaderboard" onclick="closeLeaderboard()">×</button>
+            </div>
+            
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" onclick="switchLeaderboardTab('allTime', this)">Todo</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('daily', this)">Hoy</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('weekly', this)">Semana</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('monthly', this)">Mes</button>
+            </div>
+            
+            <div id="leaderboardContent">
+                <div class="leaderboard-loading">Cargando...</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+}
+
+function closeLeaderboard() {
+    const modal = document.getElementById('leaderboardModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function switchLeaderboardTab(type, button) {
+    // Update active tab
+    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    button.classList.add('active');
+
+    // Load data for selected type
+    await loadLeaderboardData(type);
+}
+
+async function loadLeaderboardData(type = 'allTime') {
+    try {
+        const content = document.getElementById('leaderboardContent');
+        content.innerHTML = '<div class="leaderboard-loading">Cargando...</div>';
+
+        const response = await fetch(`/api/leaderboard?type=${type}&limit=20`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success && data.leaderboard.length > 0) {
+            renderLeaderboard(data.leaderboard);
+        } else {
+            content.innerHTML = `
+                <div class="leaderboard-empty">
+                    <p>📭 No hay puntuaciones aún</p>
+                    <p>¡Sé el primero en guardar tu score!</p>
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        console.error('Error loading leaderboard:', error);
+        document.getElementById('leaderboardContent').innerHTML = `
+            <div class="leaderboard-empty">
+                <p>❌ Error cargando clasificación</p>
+                <p>Inténtalo de nuevo más tarde</p>
+            </div>
+        `;
+    }
+}
+
+function renderLeaderboard(scores) {
+    const content = document.getElementById('leaderboardContent');
+    
+    const listHTML = scores.map(score => `
+        <div class="leaderboard-item rank-${score.rank <= 3 ? score.rank : 'other'}">
+            <div class="leaderboard-rank">${getRankDisplay(score.rank)}</div>
+            <div class="leaderboard-player">
+                <div class="leaderboard-username">${escapeHtml(score.username)}</div>
+                <div class="leaderboard-details">
+                    ${formatDate(score.timestamp)} • ${score.coins} Pi Coins
+                </div>
+            </div>
+            <div class="leaderboard-score">
+                ${score.score.toLocaleString()}
+                <div class="leaderboard-coins">puntos</div>
+            </div>
+        </div>
+    `).join('');
+
+    content.innerHTML = `<div class="leaderboard-list">${listHTML}</div>`;
+}
+
+function getRankDisplay(rank) {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';  
+    if (rank === 3) return '🥉';
+    return `#${rank}`;
+}
+
+function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('es-ES', { 
+        day: 'numeric', 
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}

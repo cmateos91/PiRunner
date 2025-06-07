@@ -1,0 +1,196 @@
+/* Estilos para leaderboard */
+.leaderboard-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+    backdrop-filter: blur(8px);
+}
+
+.leaderboard-content {
+    background: var(--dark-bg);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 2px solid var(--pi-gray-600);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--pi-gray-600);
+    padding-bottom: 16px;
+}
+
+.leaderboard-title {
+    color: var(--pi-gold-primary);
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.close-leaderboard {
+    background: transparent;
+    border: none;
+    color: var(--pi-gray-300);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.close-leaderboard:hover {
+    color: var(--pi-gold-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--pi-gray-700);
+}
+
+.leaderboard-tab {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    color: var(--pi-gray-400);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.leaderboard-tab.active {
+    color: var(--pi-gold-primary);
+    border-bottom-color: var(--pi-gold-primary);
+}
+
+.leaderboard-tab:hover {
+    color: var(--pi-gray-200);
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid transparent;
+    transition: var(--transition);
+}
+
+.leaderboard-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-item.rank-1 {
+    border-left-color: #FFD700;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.leaderboard-item.rank-2 {
+    border-left-color: #C0C0C0;
+    background: rgba(192, 192, 192, 0.1);
+}
+
+.leaderboard-item.rank-3 {
+    border-left-color: #CD7F32;
+    background: rgba(205, 127, 50, 0.1);
+}
+
+.leaderboard-rank {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--pi-gold-primary);
+    min-width: 40px;
+}
+
+.leaderboard-player {
+    flex: 1;
+    margin-left: 16px;
+}
+
+.leaderboard-username {
+    font-weight: 600;
+    color: var(--pi-gray-100);
+    margin-bottom: 4px;
+}
+
+.leaderboard-details {
+    font-size: 12px;
+    color: var(--pi-gray-400);
+}
+
+.leaderboard-score {
+    text-align: right;
+    color: var(--pi-gold-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.leaderboard-coins {
+    font-size: 12px;
+    color: var(--pi-gray-300);
+    margin-top: 2px;
+}
+
+.leaderboard-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--pi-gray-400);
+}
+
+.leaderboard-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--pi-gray-300);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .leaderboard-content {
+        padding: 16px;
+        margin: 20px 10px;
+        max-height: 85vh;
+    }
+
+    .leaderboard-title {
+        font-size: 20px;
+    }
+
+    .leaderboard-item {
+        padding: 10px 12px;
+    }
+
+    .leaderboard-rank {
+        font-size: 16px;
+        min-width: 35px;
+    }
+
+    .leaderboard-score {
+        font-size: 14px;
+    }
+}
