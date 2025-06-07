@@ -130,9 +130,9 @@ class PiRunner {
     }
     
     spawnElements() {
-        // Generar obstáculos
-        const baseObstacleFreq = this.isMobile() ? 220 : 180;
-        const obstacleFrequency = Math.max(110, baseObstacleFreq - Math.floor(this.frameCount / 600) * 20);
+        // Generar obstáculos (reducida frecuencia para apreciar mejor los nuevos enemigos)
+        const baseObstacleFreq = this.isMobile() ? 240 : 200;
+        const obstacleFrequency = Math.max(120, baseObstacleFreq - Math.floor(this.frameCount / 600) * 15);
         if (this.frameCount % obstacleFrequency === 0) {
             this.obstacleManager.spawn(this.frameCount);
         }

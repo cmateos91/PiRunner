@@ -5,6 +5,42 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-06-07
+
+### Added - Enemigos Matemáticos
+- 🧮 **8 nuevos enemigos matemáticos** que reemplazan obstáculos genéricos:
+  - Σ (Sigma) - Sumatoria con efectos rojos
+  - ∫ (Integral) - Integral con efectos púrpuras  
+  - Δ (Delta) - Delta con efectos verdes
+  - ∞ (Infinito) - Infinito con distorsión especial
+  - α (Alpha) - Alpha con efectos púrpuras
+  - β (Beta) - Beta con efectos grises
+  - γ (Gamma) - Gamma con efectos marrones
+  - θ (Theta) - Theta con efectos rojos oscuros
+
+### Enhanced
+- 🎭 **Sistema de progresión de enemigos**: Aparición gradual según tiempo de juego
+- ✨ **Efectos visuales únicos por enemigo**: Auras, pulsaciones y partículas específicas
+- 🌟 **Múltiples sistemas de efectos**: 
+  - Auras malévolas con gradientes radiales
+  - Campos anti-Pi con partículas orbitales
+  - Rastros de símbolos con desvanecimiento
+- 🎨 **Paleta de colores temática**: Cada enemigo con su identidad visual
+- 📐 **Spawn múltiple ocasional**: Hasta 2 enemigos simultáneos en niveles avanzados
+- 🎪 **Animaciones orgánicas**: Respiración, pulsación y rotación suave
+
+### Technical Features
+- **MathEnemyEffects.js**: Nueva clase para efectos especiales de enemigos
+- **math-enemies.css**: Estilos CSS específicos para enemigos matemáticos
+- **Progresión temporal**: Sistema de desbloqueo de enemigos por frameCount
+- **Utilidades de color**: Funciones para aclarar/oscurecer colores dinámicamente
+- **Animaciones síncronas**: Efectos coordinados con el tiempo de juego
+
+### Gameplay Changes
+- 🐌 **Frecuencia reducida**: Menos spawning para apreciar mejor los nuevos efectos
+- 🎯 **Mejor visibilidad**: Espaciado optimizado entre enemigos
+- 🏃‍♂️ **Curva de dificultad ajustada**: Progresión más suave con enemigos complejos
+
 ## [1.0.0] - 2025-06-07
 
 ### Added

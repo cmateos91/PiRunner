@@ -5,12 +5,14 @@ Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero 
 ## 🎮 Características
 
 - **Protagonista único**: Moneda Pi dorada con efectos visuales sofisticados
+- **Enemigos matemáticos**: Símbolos matemáticos como Σ, ∫, Δ, ∞, α, β, γ, θ que actúan como obstáculos
 - **Física realista**: Sistema de salto, gravedad y colisiones precisas
 - **Efectos espectaculares**: Explosión de fragmentos al chocar, partículas y animaciones
 - **Responsive**: Optimizado para escritorio y móviles
-- **Dificultad progresiva**: Velocidad y frecuencia de obstáculos que aumentan gradualmente
+- **Dificultad progresiva**: Velocidad, frecuencia y tipos de enemigos que aumentan gradualmente
 - **Sistema de recolección**: Monedas Pi para puntuar
 - **Arquitectura modular**: Código organizado y escalable
+- **Temática matemática**: Guerra entre π y otros símbolos matemáticos
 
 ## 🚀 Demo
 
@@ -22,12 +24,38 @@ Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero 
 ![Explosión](screenshots/explosion.png)
 ![Móvil](screenshots/mobile.png)
 
+## 🧮 Enemigos matemáticos
+
+El juego presenta una guerra épica entre **π (Pi)** y otros símbolos matemáticos que actúan como enemigos:
+
+### 🔴 Enemigos básicos (0-10 segundos)
+- **Σ (Sigma)** - Sumatoria: Enemigo rojo que representa la acumulación
+- **∫ (Integral)** - Integral: Enemigo púrpura que simboliza el cálculo
+- **Δ (Delta)** - Delta: Enemigo verde que representa el cambio
+
+### 🟠 Enemigos intermedios (10-30 segundos)
+- **∞ (Infinito)** - Infinito: Enemigo naranja con distorsión especial
+- **α (Alpha)** - Alpha: Enemigo púrpura, el primer rival
+- **β (Beta)** - Beta: Enemigo gris oscuro, segundo en la jerarquía
+
+### 🟣 Enemigos avanzados (30+ segundos)
+- **γ (Gamma)** - Gamma: Enemigo marrón con efectos complejos
+- **θ (Theta)** - Theta: Enemigo rojo oscuro, el más desafiante
+
+### 🎭 Características de los enemigos
+- **Efectos visuales únicos**: Cada enemigo tiene su color y animación
+- **Auras malévolas**: Campos de energía que rodean a los símbolos
+- **Pulsaciones amenazantes**: Respiración y movimiento orgánico
+- **Partículas hostiles**: Efectos de partículas que orbitan alrededor
+- **Progresión narrativa**: Los enemigos aparecen gradualmente según la dificultad
+
 ## 🎯 Cómo jugar
 
 - **Escritorio**: Presiona `ESPACIO` o `FLECHA ARRIBA` para saltar
 - **Móvil**: Toca la pantalla para saltar
-- **Objetivo**: Evita los obstáculos y recolecta monedas Pi
-- **Puntuación**: Sobrevive el mayor tiempo posible
+- **Objetivo**: Evita los símbolos matemáticos enemigos y recolecta monedas Pi
+- **Supervivencia**: Los enemigos se vuelven más frecuentes y variados con el tiempo
+- **Puntuación**: Sobrevive el mayor tiempo posible en la guerra matemática
 
 ## 🛠️ Tecnologías utilizadas
 
@@ -49,18 +77,20 @@ PiRunner/
 │   ├── modal.css          # Modal de game over
 │   ├── animations.css     # Animaciones generales
 │   ├── effects.css        # Efectos especiales
-│   └── explosion-effects.css # Efectos de explosión
+│   ├── explosion-effects.css # Efectos de explosión
+│   └── math-enemies.css   # Estilos para enemigos matemáticos
 ├── js/                     # Módulos JavaScript
 │   ├── Game.js            # Clase principal del juego
-│   ├── Player.js          # Lógica del jugador
-│   ├── ObstacleManager.js # Gestión de obstáculos
-│   ├── CoinManager.js     # Gestión de monedas
+│   ├── Player.js          # Lógica del jugador (moneda π)
+│   ├── ObstacleManager.js # Gestión de enemigos matemáticos
+│   ├── CoinManager.js     # Gestión de monedas Pi
 │   ├── Renderer.js        # Sistema de renderizado
 │   ├── InputHandler.js    # Manejo de controles
 │   ├── CollisionManager.js # Detección de colisiones
 │   ├── GameUI.js          # Interfaz de usuario
 │   ├── ParticleSystem.js  # Sistema de partículas
-│   └── CoinFragmentSystem.js # Sistema de fragmentos
+│   ├── CoinFragmentSystem.js # Sistema de fragmentos
+│   └── MathEnemyEffects.js # Efectos especiales de enemigos
 └── README.md              # Este archivo
 ```
 
@@ -92,8 +122,16 @@ npx live-server
 
 ## 🎨 Características técnicas
 
+### Sistema de enemigos matemáticos
+Los obstáculos ahora son símbolos matemáticos con:
+- **8 tipos diferentes** de enemigos con progresión temporal
+- **Efectos visuales únicos** para cada símbolo
+- **Auras malévolas** y campos de energía
+- **Animaciones orgánicas** con pulsación y respiración
+- **Colores temáticos** específicos por enemigo
+- **Spawn múltiple** ocasional para mayor desafío
 ### Sistema de fragmentación
-Al chocar con un obstáculo, la moneda se descompone en 25-40 mini monedas con:
+Al chocar con un enemigo matemático, la moneda se descompone en 25-40 mini monedas con:
 - **Física realista**: Gravedad, rebotes múltiples y fricción
 - **Dispersión natural**: Ángulos y velocidades aleatorias
 - **Persistencia visual**: Los fragmentos permanecen en el suelo
