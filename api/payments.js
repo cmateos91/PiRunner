@@ -142,41 +142,70 @@ async function saveScoreToLeaderboard(payment) {
     const userInfo = await getUserInfo(payment.user_uid);
     console.log('User info:', userInfo);
 
-    // Construir URL correcta para la API
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'https://pi-runner.vercel.app';
-    
-    const apiUrl = `${baseUrl}/api/leaderboard`;
-    console.log('Calling leaderboard API:', apiUrl);
-
-    // Call leaderboard API to save score
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        paymentData: payment,
-        userInfo: userInfo
-      })
-    });
-
-    console.log('Leaderboard API response status:', response.status);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Leaderboard API error:', errorText);
-      throw new Error(`Leaderboard API error: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('Score saved to leaderboard successfully:', result);
+    // Llamada directa a la función de leaderboard (interna)
+    await saveScoreDirectly(payment, userInfo);
+    console.log('Score saved to leaderboard successfully via direct call');
     
   } catch (error) {
     console.error('Error saving score to leaderboard:', error);
     // Don't throw error - payment should still complete even if leaderboard fails
   }
+}
+
+// Función para guardar directamente sin HTTP
+async function saveScoreDirectly(paymentData, userInfo) {
+  try {
+    console.log('Saving score directly...');
+    
+    const newScore = {
+      id: generateScoreId(),
+      paymentId: paymentData.identifier,
+      userUid: paymentData.user_uid,
+      username: userInfo.username,
+      score: paymentData.metadata?.score || 0,
+      coins: paymentData.metadata?.coins || 0,
+      timestamp: new Date().toISOString(),
+      txid: paymentData.transaction?.txid || null,
+      verified: paymentData.status?.developer_completed || false,
+      gameVersion: paymentData.metadata?.gameVersion || "1.0"
+    };
+
+    console.log('New score object:', newScore);
+
+    // Guardar en storage global
+    await saveScoreToGlobalStorage(newScore);
+    console.log('Score saved to global storage successfully');
+
+    return newScore;
+  } catch (error) {
+    console.error('Error in direct save:', error);
+    throw error;
+  }
+}
+
+// Storage global compartido entre funciones
+global.globalScoresStorage = global.globalScoresStorage || [];
+
+async function saveScoreToGlobalStorage(scoreData) {
+  console.log('Saving to global storage:', scoreData);
+  
+  // Check if score already exists (prevent duplicates)
+  const existingIndex = global.globalScoresStorage.findIndex(s => s.paymentId === scoreData.paymentId);
+  
+  if (existingIndex >= 0) {
+    console.log('Score already exists, updating...');
+    global.globalScoresStorage[existingIndex] = scoreData;
+  } else {
+    console.log('Adding new score...');
+    global.globalScoresStorage.push(scoreData);
+  }
+  
+  console.log(`Global storage now has ${global.globalScoresStorage.length} total scores`);
+  return scoreData;
+}
+
+function generateScoreId() {
+  return 'score_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
 // Get user info for leaderboard

@@ -81,27 +81,20 @@ export default async function handler(req, res) {
 // Simple persistent storage using global variable + file simulation
 // For production, replace with real database (Vercel KV, MongoDB, etc.)
 
-// Global scores storage (simulates persistent database)
-let globalScoresStorage = null;
-
 async function initializeStorage() {
-  if (globalScoresStorage === null) {
-    console.log('Initializing scores storage...');
-    // In a real implementation, this would load from database
-    globalScoresStorage = [];
-    
-    // Load any existing scores from environment or external source
-    // For now, start with empty array
-    console.log('Storage initialized with', globalScoresStorage.length, 'scores');
+  if (!global.globalScoresStorage) {
+    console.log('Initializing global scores storage...');
+    global.globalScoresStorage = [];
+    console.log('Global storage initialized');
   }
-  return globalScoresStorage;
+  return global.globalScoresStorage;
 }
 
 async function getScores(type = 'allTime', limit = 10) {
   console.log(`Getting scores for type: ${type}, limit: ${limit}`);
   
   const storage = await initializeStorage();
-  console.log(`Total scores in storage: ${storage.length}`);
+  console.log(`Total scores in global storage: ${storage.length}`);
   
   // Filter by time period
   let filteredScores = [...storage];
@@ -139,7 +132,7 @@ async function getScores(type = 'allTime', limit = 10) {
 }
 
 async function saveScore(scoreData) {
-  console.log('Saving score to storage:', scoreData);
+  console.log('Saving score to global storage:', scoreData);
   
   const storage = await initializeStorage();
   
@@ -154,11 +147,7 @@ async function saveScore(scoreData) {
     storage.push(scoreData);
   }
   
-  console.log(`Storage now has ${storage.length} total scores`);
-  
-  // In production, save to real database here
-  // await database.saveScores(storage);
-  
+  console.log(`Global storage now has ${storage.length} total scores`);
   return scoreData;
 }
 
