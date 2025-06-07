@@ -1,5 +1,5 @@
-// Leaderboard API - Get scores with persistent storage
-import ScoreStorage from '../lib/ScoreStorage.js';
+// Leaderboard API - Get scores with Vercel KV storage
+import KVStorage from '../lib/KVStorage.js';
 
 export default async function handler(req, res) {
   // CORS headers
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       const { type = 'allTime', limit = 10 } = req.query;
       console.log('Query params:', { type, limit });
       
-      const scores = await ScoreStorage.getScores(type, parseInt(limit));
+      const scores = await KVStorage.getScores(type, parseInt(limit));
       console.log(`Found ${scores.length} scores`);
       
       return res.status(200).json({
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
 
       console.log('New score object:', newScore);
 
-      await ScoreStorage.addScore(newScore);
+      await KVStorage.addScore(newScore);
       console.log('Score saved successfully');
 
       return res.status(200).json({

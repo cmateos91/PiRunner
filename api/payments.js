@@ -1,7 +1,7 @@
 // Pi Network Backend Integration
 // API Functions for Vercel Serverless
 
-import ScoreStorage from '../lib/ScoreStorage.js';
+import KVStorage from '../lib/KVStorage.js';
 
 const PI_API_KEY = 'odukea0zelpnbewox9feh6ovr3nti06egwfyzkkekhkyzbunamixhuibj0fers5k';
 const PI_API_BASE = 'https://api.minepi.com/v2';
@@ -174,9 +174,9 @@ async function saveScoreDirectly(paymentData, userInfo) {
 
     console.log('New score object:', newScore);
 
-    // Guardar usando ScoreStorage persistente
-    await ScoreStorage.addScore(newScore);
-    console.log('Score saved to persistent storage successfully');
+    // Guardar usando KVStorage (Redis)
+    await KVStorage.addScore(newScore);
+    console.log('Score saved to KV storage successfully');
 
     return newScore;
   } catch (error) {
