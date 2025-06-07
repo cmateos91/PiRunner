@@ -88,24 +88,28 @@ class PiNetworkManager {
 
             const callbacks = {
                 onReadyForServerApproval: (paymentId) => {
-                    console.log('Pago listo para aprobación:', paymentId);
-                    // TODO: Enviar a backend para aprobación
+                    console.log('🟡 CALLBACK: onReadyForServerApproval');
+                    console.log('🟡 PaymentId:', paymentId);
                     this.handleServerApproval(paymentId);
                 },
                 
                 onReadyForServerCompletion: (paymentId, txid) => {
-                    console.log('Pago listo para completar:', paymentId, txid);
-                    // TODO: Enviar a backend para completar
+                    console.log('🔥 CALLBACK: onReadyForServerCompletion ejecutado!');
+                    console.log('🔥 PaymentId:', paymentId);
+                    console.log('🔥 TxId:', txid);
                     this.handleServerCompletion(paymentId, txid);
                 },
                 
                 onCancel: (paymentId) => {
-                    console.log('Pago cancelado:', paymentId);
+                    console.log('🔴 CALLBACK: onCancel');
+                    console.log('🔴 PaymentId:', paymentId);
                     this.showPaymentMessage('Pago cancelado. Puntuación no guardada.', 'warning');
                 },
                 
                 onError: (error, payment) => {
-                    console.error('Error en pago:', error, payment);
+                    console.log('❌ CALLBACK: onError');
+                    console.error('❌ Error:', error);
+                    console.error('❌ Payment:', payment);
                     this.showPaymentMessage('Error al procesar el pago. Inténtalo de nuevo.', 'error');
                 }
             };
@@ -136,17 +140,20 @@ class PiNetworkManager {
     }
 
     handleServerCompletion(paymentId, txid) {
-        console.log('Enviando para completar en servidor:', paymentId, txid);
+        console.log('🔥 EJECUTANDO handleServerCompletion');
+        console.log('🔥 PaymentId:', paymentId);
+        console.log('🔥 TxId:', txid);
+        
         this.showPaymentMessage('Finalizando pago...', 'info');
         
         // Enviar al backend para completar
         this.callBackendAPI('complete', paymentId, txid)
             .then(response => {
-                console.log('Pago completado:', response);
+                console.log('🔥 PAGO COMPLETADO EXITOSAMENTE:', response);
                 this.showPaymentMessage('¡Puntuación guardada exitosamente! 🎉', 'success');
             })
             .catch(error => {
-                console.error('Error en completado:', error);
+                console.error('🔥 ERROR EN COMPLETADO:', error);
                 this.showPaymentMessage('Error al completar el pago', 'error');
             });
     }
