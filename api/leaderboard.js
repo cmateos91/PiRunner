@@ -1,42 +1,36 @@
-// Leaderboard API - Get scores with Vercel KV storage
-import KVStorage from '../lib/KVStorage.js';
+// Leaderboard API - Simplificado
+import LeaderboardService from '../lib/LeaderboardService.js';
 
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    console.log(`=== LEADERBOARD API ${req.method} ===`);
-    
     if (req.method === 'GET') {
-      console.log('Getting leaderboard scores...');
-      const { type = 'allTime', limit = 10 } = req.query;
-      console.log('Query params:', { type, limit });
+      // Health check
+      if (req.query.health === 'true') {
+        const health = await LeaderboardService.healthCheck();
+        return res.status(200).json(health);
+      }
       
-      const scores = await KVStorage.getScores(type, parseInt(limit));
-      console.log(`Found ${scores.length} scores`);
+      const { type = 'allTime', limit = 10 } = req.query;
+      const scores = await LeaderboardService.getScores(type, parseInt(limit));
       
       return res.status(200).json({
         success: true,
         leaderboard: scores,
-        type: type,
+        type,
         total: scores.length
       });
     }
 
     if (req.method === 'POST') {
-      console.log('Saving new score...');
       const { paymentData, userInfo } = req.body;
-      console.log('Received data:', { paymentData: !!paymentData, userInfo: !!userInfo });
       
       if (!paymentData || !userInfo) {
-        console.error('Missing required data');
         return res.status(400).json({
           success: false,
           error: 'Missing paymentData or userInfo'
@@ -44,7 +38,7 @@ export default async function handler(req, res) {
       }
 
       const newScore = {
-        id: generateScoreId(),
+        id: `score_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         paymentId: paymentData.identifier,
         userUid: paymentData.user_uid,
         username: userInfo.username,
@@ -56,10 +50,7 @@ export default async function handler(req, res) {
         gameVersion: paymentData.metadata?.gameVersion || "1.0"
       };
 
-      console.log('New score object:', newScore);
-
-      await KVStorage.addScore(newScore);
-      console.log('Score saved successfully');
+      await LeaderboardService.saveScore(newScore);
 
       return res.status(200).json({
         success: true,
@@ -78,8 +69,4 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
-
-function generateScoreId() {
-  return 'score_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
