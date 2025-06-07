@@ -2,6 +2,7 @@
 // API Functions for Vercel Serverless
 
 import KVStorage from '../lib/KVStorage.js';
+import LeaderboardService from '../lib/LeaderboardService.js';
 
 const PI_API_KEY = 'odukea0zelpnbewox9feh6ovr3nti06egwfyzkkekhkyzbunamixhuibj0fers5k';
 const PI_API_BASE = 'https://api.minepi.com/v2';
@@ -189,6 +190,11 @@ async function saveScoreToLeaderboard(payment, userInfo = null) {
 
     // Llamada directa a la función de leaderboard (interna)
     const saveResult = await saveScoreDirectly(payment, finalUserInfo);
+    
+    // Limpiar cache del leaderboard para que se reflejen los cambios
+    LeaderboardService.cache.clear();
+    console.log('Leaderboard cache cleared');
+    
     console.log('Score saved to leaderboard successfully via direct call');
     
     return saveResult;
