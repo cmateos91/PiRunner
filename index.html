@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="css/leaderboard.css">
     <link rel="stylesheet" href="css/pi-browser-optimizations.css">
     <link rel="stylesheet" href="css/ad-space.css">
+    <link rel="stylesheet" href="css/language-selector.css">
     
     <!-- Pi Network SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -30,28 +31,28 @@
         
         <div id="ui">
             <div class="ui-scores">
-                <div>Puntos: <span id="score">0</span></div>
-                <div>Pi Coins: <span id="coins">0</span></div>
+                <div><span data-i18n="game.points">Puntos</span>: <span id="score">0</span></div>
+                <div><span data-i18n="game.coins">Pi Coins</span>: <span id="coins">0</span></div>
             </div>
-            <button id="muteButton" class="audio-control">🔊</button>
+            <button id="muteButton" class="audio-control" data-i18n-title="audio.mute">🔊</button>
         </div>
         
         <div id="gameOver">
-            <h2>¡Juego Terminado!</h2>
-            <p>Puntuación: <span id="finalScore">0</span></p>
-            <p>Pi Coins: <span id="finalCoins">0</span></p>
+            <h2 data-i18n="game.gameOver">¡Juego Terminado!</h2>
+            <p><span data-i18n="game.score">Puntuación</span>: <span id="finalScore">0</span></p>
+            <p><span data-i18n="game.coins">Pi Coins</span>: <span id="finalCoins">0</span></p>
             <div class="game-over-buttons">
-                <button class="btn" onclick="game.restart()">Reiniciar</button>
+                <button class="btn" onclick="game.restart()" data-i18n="game.restart">Reiniciar</button>
                 <div class="secondary-buttons">
-                    <button class="btn btn-secondary" onclick="showLeaderboard()">📊 Clasificación</button>
-                    <button class="btn btn-secondary" onclick="saveScore()">💾 Guardar</button>
+                    <button class="btn btn-secondary" onclick="showLeaderboard()" data-i18n="game.leaderboard">📊 Clasificación</button>
+                    <button class="btn btn-secondary" onclick="saveScore()" data-i18n="game.saveScore">💾 Guardar</button>
                 </div>
             </div>
         </div>
         
         <!-- Espacio reservado para anuncios futuros -->
         <div id="adSpace">
-            <div class="ad-placeholder">
+            <div class="ad-placeholder" data-i18n="ads.space">
                 📱 Espacio reservado para anuncios • Pi Network Ads Ready
             </div>
         </div>
@@ -60,10 +61,18 @@
         <button id="toggleAds" onclick="toggleAdSpace()" title="Toggle Ad Space">
             📺
         </button>
+        
+        <!-- Selector de idioma -->
+        <div id="languageSelector">
+            <button class="language-option" data-lang="en" onclick="changeLanguage('en')" title="English">🇺🇸</button>
+            <button class="language-option" data-lang="es" onclick="changeLanguage('es')" title="Español">🇪🇸</button>
+            <button class="language-option" data-lang="hi" onclick="changeLanguage('hi')" title="हिंदी">🇮🇳</button>
+        </div>
     </div>
     
     <!-- JavaScript Core Files -->
     <script src="js/config.js"></script>
+    <script src="js/I18nManager.js"></script>
     <script src="js/pi-browser-config.js"></script>
     <script src="js/PerformanceMonitor.js"></script>
     <script src="js/AudioManager.js"></script>
@@ -82,5 +91,7 @@
     <script src="js/audio-controls.js"></script>
     <script src="js/pi-network-integration.js"></script>
     <script src="js/game-over-functions.js"></script>
+    <script src="js/language-selector.js"></script>
+    <script src="js/translation-test.js"></script>
 </body>
 </html>

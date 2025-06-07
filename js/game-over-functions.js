@@ -26,7 +26,7 @@ async function showLeaderboard() {
     console.log('Mostrando clasificación');
     
     try {
-        showTempMessage('📊 Cargando clasificación...', 'info');
+        showTempMessage(window.i18n ? window.i18n.t('leaderboard.loading') : 'Cargando clasificación...', 'info');
         
         // Crear modal del leaderboard
         createLeaderboardModal();
@@ -36,7 +36,7 @@ async function showLeaderboard() {
         
     } catch (error) {
         console.error('Error mostrando leaderboard:', error);
-        showTempMessage('❌ Error cargando clasificación', 'error');
+        showTempMessage(window.i18n ? window.i18n.t('leaderboard.error') : 'Error cargando clasificación', 'error');
     }
 }
 
@@ -66,17 +66,17 @@ async function saveScore() {
 
         // Autenticar si no está autenticado
         if (!window.piNetworkManager.isAuthenticated) {
-            showTempMessage('🔐 Autenticando con Pi Network...', 'info');
+            showTempMessage(window.i18n ? window.i18n.t('payment.authenticate') : 'Autenticando con Pi Network...', 'info');
             const authenticated = await window.piNetworkManager.authenticate();
             
             if (!authenticated) {
-                showTempMessage('❌ Error de autenticación', 'error');
+                showTempMessage(window.i18n ? window.i18n.t('payment.authError') : 'Error de autenticación', 'error');
                 return;
             }
         }
 
         // Crear pago para guardar puntuación
-        showTempMessage('💰 Iniciando pago para guardar puntuación...', 'info');
+        showTempMessage(window.i18n ? window.i18n.t('payment.initiating') : 'Iniciando pago para guardar puntuación...', 'info');
         await window.piNetworkManager.createPaymentForScore(score, coins);
 
     } catch (error) {
@@ -152,19 +152,19 @@ function createLeaderboardModal() {
     modal.innerHTML = `
         <div class="leaderboard-content">
             <div class="leaderboard-header">
-                <h2 class="leaderboard-title">🏆 Clasificación</h2>
+                <h2 class="leaderboard-title">${window.i18n ? window.i18n.t('leaderboard.title') : '🏆 Clasificación'}</h2>
                 <button class="close-leaderboard" onclick="closeLeaderboard()">×</button>
             </div>
             
             <div class="leaderboard-tabs">
-                <button class="leaderboard-tab active" onclick="switchLeaderboardTab('allTime', this)">Todo</button>
-                <button class="leaderboard-tab" onclick="switchLeaderboardTab('daily', this)">Hoy</button>
-                <button class="leaderboard-tab" onclick="switchLeaderboardTab('weekly', this)">Semana</button>
-                <button class="leaderboard-tab" onclick="switchLeaderboardTab('monthly', this)">Mes</button>
+                <button class="leaderboard-tab active" onclick="switchLeaderboardTab('allTime', this)">${window.i18n ? window.i18n.t('leaderboard.all') : 'Todo'}</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('daily', this)">${window.i18n ? window.i18n.t('leaderboard.today') : 'Hoy'}</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('weekly', this)">${window.i18n ? window.i18n.t('leaderboard.week') : 'Semana'}</button>
+                <button class="leaderboard-tab" onclick="switchLeaderboardTab('monthly', this)">${window.i18n ? window.i18n.t('leaderboard.month') : 'Mes'}</button>
             </div>
             
             <div id="leaderboardContent">
-                <div class="leaderboard-loading">Cargando...</div>
+                <div class="leaderboard-loading">${window.i18n ? window.i18n.t('leaderboard.loading') : 'Cargando...'}</div>
             </div>
         </div>
     `;
@@ -194,7 +194,7 @@ async function switchLeaderboardTab(type, button) {
 async function loadLeaderboardData(type = 'allTime') {
     try {
         const content = document.getElementById('leaderboardContent');
-        content.innerHTML = '<div class="leaderboard-loading">Cargando...</div>';
+        content.innerHTML = `<div class="leaderboard-loading">${window.i18n ? window.i18n.t('leaderboard.loading') : 'Cargando...'}</div>`;
 
         const response = await fetch(`/api/leaderboard?type=${type}&limit=20`);
         
@@ -209,8 +209,8 @@ async function loadLeaderboardData(type = 'allTime') {
         } else {
             content.innerHTML = `
                 <div class="leaderboard-empty">
-                    <p>📭 No hay puntuaciones aún</p>
-                    <p>¡Sé el primero en guardar tu score!</p>
+                    <p>${window.i18n ? window.i18n.t('leaderboard.empty') : '📭 No hay puntuaciones aún'}</p>
+                    <p>${window.i18n ? window.i18n.t('leaderboard.beFirst') : '¡Sé el primero en guardar tu score!'}</p>
                 </div>
             `;
         }
@@ -219,8 +219,8 @@ async function loadLeaderboardData(type = 'allTime') {
         console.error('Error loading leaderboard:', error);
         document.getElementById('leaderboardContent').innerHTML = `
             <div class="leaderboard-empty">
-                <p>❌ Error cargando clasificación</p>
-                <p>Inténtalo de nuevo más tarde</p>
+                <p>${window.i18n ? window.i18n.t('leaderboard.error') : '❌ Error cargando clasificación'}</p>
+                <p>${window.i18n ? window.i18n.t('leaderboard.tryAgain') : 'Inténtalo de nuevo más tarde'}</p>
             </div>
         `;
     }

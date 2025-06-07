@@ -103,14 +103,14 @@ class PiNetworkManager {
                 onCancel: (paymentId) => {
                     console.log('🔴 CALLBACK: onCancel');
                     console.log('🔴 PaymentId:', paymentId);
-                    this.showPaymentMessage('Pago cancelado. Puntuación no guardada.', 'warning');
+                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.cancelled') : 'Pago cancelado. Puntuación no guardada.', 'warning');
                 },
                 
                 onError: (error, payment) => {
                     console.log('❌ CALLBACK: onError');
                     console.error('❌ Error:', error);
                     console.error('❌ Payment:', payment);
-                    this.showPaymentMessage('Error al procesar el pago. Inténtalo de nuevo.', 'error');
+                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al procesar el pago. Inténtalo de nuevo.', 'error');
                 }
             };
 
@@ -126,7 +126,7 @@ class PiNetworkManager {
 
     handleServerApproval(paymentId) {
         console.log('Enviando para aprobación del servidor:', paymentId);
-        this.showPaymentMessage('Procesando pago...', 'info');
+        this.showPaymentMessage(window.i18n ? window.i18n.t('payment.processing') : 'Procesando pago...', 'info');
         
         // Enviar al backend para aprobación
         this.callBackendAPI('approve', paymentId)
@@ -135,7 +135,7 @@ class PiNetworkManager {
             })
             .catch(error => {
                 console.error('Error en aprobación:', error);
-                this.showPaymentMessage('Error en la aprobación del pago', 'error');
+                this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error en la aprobación del pago', 'error');
             });
     }
 
@@ -144,7 +144,7 @@ class PiNetworkManager {
         console.log('🔥 PaymentId:', paymentId);
         console.log('🔥 TxId:', txid);
         
-        this.showPaymentMessage('Finalizando pago...', 'info');
+        this.showPaymentMessage(window.i18n ? window.i18n.t('payment.finalizing') : 'Finalizando pago...', 'info');
         
         // Enviar al backend para completar
         this.callBackendAPI('complete', paymentId, txid)
@@ -153,14 +153,14 @@ class PiNetworkManager {
                 
                 // Verificar si fue una mejora
                 if (response.payment && response.wasImprovement === false) {
-                    this.showPaymentMessage('Puntuación no mejorada. ¡Intenta superar tu récord! 💪', 'warning');
+                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.noImprovement') : 'Puntuación no mejorada. ¡Intenta superar tu récord! 💪', 'warning');
                 } else {
-                    this.showPaymentMessage('¡Nuevo récord guardado exitosamente! 🎉', 'success');
+                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.success') : '¡Nuevo récord guardado exitosamente! 🎉', 'success');
                 }
             })
             .catch(error => {
                 console.error('🔥 ERROR EN COMPLETADO:', error);
-                this.showPaymentMessage('Error al completar el pago', 'error');
+                this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al completar el pago', 'error');
             });
     }
 

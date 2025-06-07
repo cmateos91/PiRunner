@@ -1,0 +1,42 @@
+{
+  "game.points": "Points",
+  "game.coins": "Pi Coins",
+  "game.gameOver": "Game Over!",
+  "game.score": "Score",
+  "game.restart": "Restart",
+  "game.leaderboard": "📊 Leaderboard",
+  "game.saveScore": "💾 Save Score",
+  
+  "leaderboard.title": "🏆 Leaderboard",
+  "leaderboard.all": "All Time",
+  "leaderboard.today": "Today",
+  "leaderboard.week": "Week",
+  "leaderboard.month": "Month",
+  "leaderboard.empty": "📭 No scores yet",
+  "leaderboard.beFirst": "Be the first to save your score!",
+  "leaderboard.loading": "Loading...",
+  "leaderboard.error": "❌ Error loading leaderboard",
+  "leaderboard.tryAgain": "Try again later",
+  
+  "payment.processing": "Processing payment...",
+  "payment.finalizing": "Finalizing payment...",
+  "payment.cancelled": "Payment cancelled. Score not saved.",
+  "payment.error": "Error processing payment. Try again.",
+  "payment.success": "🎉 New record saved successfully!",
+  "payment.noImprovement": "💪 Score not improved. Try to beat your record!",
+  "payment.authenticate": "🔐 Authenticating with Pi Network...",
+  "payment.authError": "❌ Authentication error",
+  "payment.initiating": "💰 Initiating payment to save score...",
+  
+  "audio.mute": "Mute",
+  "audio.unmute": "Unmute",
+  
+  "ads.space": "📱 Ad space reserved • Pi Network Ads Ready",
+  
+  "general.loading": "Loading...",
+  "general.error": "Error",
+  "general.success": "Success",
+  "general.cancel": "Cancel",
+  "general.close": "Close",
+  "general.ok": "OK"
+}

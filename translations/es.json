@@ -1,0 +1,42 @@
+{
+  "game.points": "Puntos",
+  "game.coins": "Pi Coins",
+  "game.gameOver": "¡Juego Terminado!",
+  "game.score": "Puntuación",
+  "game.restart": "Reiniciar",
+  "game.leaderboard": "📊 Clasificación",
+  "game.saveScore": "💾 Guardar",
+  
+  "leaderboard.title": "🏆 Clasificación",
+  "leaderboard.all": "Todo",
+  "leaderboard.today": "Hoy",
+  "leaderboard.week": "Semana",
+  "leaderboard.month": "Mes",
+  "leaderboard.empty": "📭 No hay puntuaciones aún",
+  "leaderboard.beFirst": "¡Sé el primero en guardar tu score!",
+  "leaderboard.loading": "Cargando...",
+  "leaderboard.error": "❌ Error cargando clasificación",
+  "leaderboard.tryAgain": "Inténtalo de nuevo más tarde",
+  
+  "payment.processing": "Procesando pago...",
+  "payment.finalizing": "Finalizando pago...",
+  "payment.cancelled": "Pago cancelado. Puntuación no guardada.",
+  "payment.error": "Error al procesar el pago. Inténtalo de nuevo.",
+  "payment.success": "🎉 ¡Nuevo récord guardado exitosamente!",
+  "payment.noImprovement": "💪 Puntuación no mejorada. ¡Intenta superar tu récord!",
+  "payment.authenticate": "🔐 Autenticando con Pi Network...",
+  "payment.authError": "❌ Error de autenticación",
+  "payment.initiating": "💰 Iniciando pago para guardar puntuación...",
+  
+  "audio.mute": "Silenciar",
+  "audio.unmute": "Activar sonido",
+  
+  "ads.space": "📱 Espacio reservado para anuncios • Pi Network Ads Ready",
+  
+  "general.loading": "Cargando...",
+  "general.error": "Error",
+  "general.success": "Éxito",
+  "general.cancel": "Cancelar",
+  "general.close": "Cerrar",
+  "general.ok": "OK"
+}

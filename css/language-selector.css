@@ -1,0 +1,75 @@
+/* Selector de idioma */
+#languageSelector {
+    position: fixed;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    background: rgba(31, 41, 55, 0.9);
+    border: 1px solid var(--pi-gray-600);
+    border-radius: 6px;
+    padding: 4px;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    backdrop-filter: blur(8px);
+}
+
+.language-option {
+    background: transparent;
+    border: none;
+    color: var(--pi-gray-300);
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    min-width: 32px;
+    text-align: center;
+}
+
+.language-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--pi-gold-primary);
+}
+
+.language-option.active {
+    background: var(--pi-gold-primary);
+    color: var(--pi-gray-900);
+    font-weight: 600;
+}
+
+.language-option:active {
+    transform: scale(0.95);
+}
+
+/* Para móviles, hacer el selector más pequeño */
+@media (max-width: 768px) {
+    #languageSelector {
+        left: 2px;
+        padding: 2px;
+    }
+    
+    .language-option {
+        font-size: 10px;
+        padding: 3px 4px;
+        min-width: 28px;
+    }
+}
+
+/* En modo landscape móvil, mover a la esquina */
+@media (orientation: landscape) and (max-height: 500px) {
+    #languageSelector {
+        top: 8px;
+        left: 8px;
+        transform: none;
+        flex-direction: row;
+    }
+}
+
+/* Ocultar en pantallas muy pequeñas si es necesario */
+@media (max-width: 320px) {
+    #languageSelector {
+        display: none;
+    }
+}

@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Inicializar audio después de primer click en cualquier parte
         document.addEventListener('click', initializeAudioOnFirstClick, { once: true });
         document.addEventListener('touchstart', initializeAudioOnFirstClick, { once: true });
+        
+        // Escuchar cambios de idioma para actualizar el botón
+        window.addEventListener('languageChanged', () => {
+            if (window.game && window.game.audioManager) {
+                updateMuteButtonVisual(window.game.audioManager.isMuted());
+            }
+        });
     }
 });
 
@@ -49,7 +56,14 @@ function updateMuteButtonVisual(isMuted) {
     if (muteButton) {
         muteButton.textContent = isMuted ? '🔇' : '🔊';
         muteButton.classList.toggle('muted', isMuted);
-        muteButton.setAttribute('aria-label', isMuted ? 'Activar sonido' : 'Silenciar');
+        
+        // Usar traducciones si están disponibles
+        const label = isMuted ? 
+            (window.i18n ? window.i18n.t('audio.unmute') : 'Activar sonido') : 
+            (window.i18n ? window.i18n.t('audio.mute') : 'Silenciar');
+        
+        muteButton.setAttribute('aria-label', label);
+        muteButton.setAttribute('title', label);
         
         // Cambiar color para mejor feedback visual
         muteButton.style.opacity = isMuted ? '0.6' : '1.0';
