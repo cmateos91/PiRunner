@@ -85,6 +85,48 @@ export default async function handler(req, res) {
         }
 
         console.log(`Completing payment: ${paymentId} with txid: ${txid}`);
+        
+        // First, check payment status before trying to complete
+        try {
+          const paymentStatus = await piApiRequest(`/payments/${paymentId}`, 'GET');
+          console.log('Payment status before completion:', paymentStatus.status);
+          
+          if (paymentStatus.status.cancelled) {
+            console.log('Payment was cancelled, cannot complete');
+            
+            // Even if cancelled, try to save score if transaction was verified
+            if (paymentStatus.status.transaction_verified && paymentStatus.transaction?.txid) {
+              console.log('Transaction was verified, saving score anyway...');
+              await saveScoreToLeaderboard(paymentStatus);
+              
+              return res.status(200).json({
+                success: true,
+                message: 'Payment was cancelled but score saved due to verified transaction',
+                payment: paymentStatus
+              });
+            }
+            
+            return res.status(400).json({
+              success: false,
+              error: 'Payment was cancelled and cannot be completed',
+              payment: paymentStatus
+            });
+          }
+          
+          if (paymentStatus.status.developer_completed) {
+            console.log('Payment already completed');
+            return res.status(200).json({
+              success: true,
+              message: 'Payment already completed',
+              payment: paymentStatus
+            });
+          }
+        } catch (statusError) {
+          console.error('Error checking payment status:', statusError);
+          // Continue with completion attempt if status check fails
+        }
+
+        // Attempt to complete the payment
         result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid });
 
         // Guardar score en leaderboard después de completar pago
