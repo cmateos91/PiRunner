@@ -150,7 +150,13 @@ class PiNetworkManager {
         this.callBackendAPI('complete', paymentId, txid)
             .then(response => {
                 console.log('🔥 PAGO COMPLETADO EXITOSAMENTE:', response);
-                this.showPaymentMessage('¡Puntuación guardada exitosamente! 🎉', 'success');
+                
+                // Verificar si fue una mejora
+                if (response.payment && response.wasImprovement === false) {
+                    this.showPaymentMessage('Puntuación no mejorada. ¡Intenta superar tu récord! 💪', 'warning');
+                } else {
+                    this.showPaymentMessage('¡Nuevo récord guardado exitosamente! 🎉', 'success');
+                }
             })
             .catch(error => {
                 console.error('🔥 ERROR EN COMPLETADO:', error);

@@ -130,12 +130,13 @@ export default async function handler(req, res) {
         result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid });
 
         // Guardar score en leaderboard después de completar pago
-        await saveScoreToLeaderboard(result, userInfo);
+        const saveResult = await saveScoreToLeaderboard(result, userInfo);
 
         return res.status(200).json({
           success: true,
           message: 'Payment completed and score saved to leaderboard',
-          payment: result
+          payment: result,
+          wasImprovement: saveResult?.wasImprovement
         });
 
       case 'cancel':
@@ -187,12 +188,15 @@ async function saveScoreToLeaderboard(payment, userInfo = null) {
     console.log('User info:', finalUserInfo);
 
     // Llamada directa a la función de leaderboard (interna)
-    await saveScoreDirectly(payment, finalUserInfo);
+    const saveResult = await saveScoreDirectly(payment, finalUserInfo);
     console.log('Score saved to leaderboard successfully via direct call');
+    
+    return saveResult;
     
   } catch (error) {
     console.error('Error saving score to leaderboard:', error);
     // Don't throw error - payment should still complete even if leaderboard fails
+    return null;
   }
 }
 
@@ -216,11 +220,17 @@ async function saveScoreDirectly(paymentData, userInfo) {
 
     console.log('New score object:', newScore);
 
-    // Guardar usando KVStorage (Redis)
-    await KVStorage.addScore(newScore);
-    console.log('Score saved to KV storage successfully');
+    // Guardar usando KVStorage (Blob)
+    const savedScore = await KVStorage.addScore(newScore);
+    
+    // Verificar si fue una mejora
+    const wasImprovement = savedScore.id === newScore.id; // Solo se guarda con nuevo ID si fue mejora
+    console.log(`Score saved to KV storage successfully. Was improvement: ${wasImprovement}`);
 
-    return newScore;
+    return {
+      score: savedScore,
+      wasImprovement
+    };
   } catch (error) {
     console.error('Error in direct save:', error);
     throw error;
