@@ -10,19 +10,12 @@ class I18nManager {
     
     async init() {
         try {
-            // Detectar idioma del usuario
             this.currentLanguage = this.detectUserLanguage();
-            
-            // Cargar traducciones
             await this.loadTranslations();
-            
-            // Aplicar traducciones a la página
             this.applyTranslations();
-            
             console.log(`🌍 I18n initialized: ${this.currentLanguage}`);
         } catch (error) {
             console.error('❌ Error initializing i18n:', error);
-            // Fallback al inglés
             this.currentLanguage = 'en';
             await this.loadTranslations();
             this.applyTranslations();
@@ -30,33 +23,27 @@ class I18nManager {
     }
     
     detectUserLanguage() {
-        // 1. Verificar localStorage (preferencia del usuario)
         const savedLang = localStorage.getItem('pirunner_language');
         if (savedLang && this.supportedLanguages.includes(savedLang)) {
             return savedLang;
         }
         
-        // 2. Detectar desde navegador
         const browserLang = navigator.language || navigator.userLanguage;
         const langCode = browserLang.toLowerCase().split('-')[0];
         
-        // 3. Mapear códigos especiales
         const langMap = {
-            'hi': 'hi',     // Hindi
-            'en': 'en',     // English
-            'es': 'es',     // Spanish
-            'in': 'hi',     // Indonesia -> Hindi (Pi Network tiene muchos usuarios de India)
+            'hi': 'hi',
+            'en': 'en',
+            'es': 'es',
+            'in': 'hi',
         };
         
         const detectedLang = langMap[langCode] || 'en';
-        
-        console.log(`🌍 Detected language: ${browserLang} -> ${detectedLang}`);
         return this.supportedLanguages.includes(detectedLang) ? detectedLang : 'en';
     }
     
     async loadTranslations() {
         try {
-            // Cargar archivo de traducciones del idioma actual
             const response = await fetch(`/translations/${this.currentLanguage}.json`);
             
             if (!response.ok) {
@@ -64,12 +51,9 @@ class I18nManager {
             }
             
             this.translations = await response.json();
-            console.log(`📝 Translations loaded for: ${this.currentLanguage}`);
             
         } catch (error) {
             console.warn(`⚠️ Failed to load translations for ${this.currentLanguage}, using fallback`);
-            
-            // Fallback: usar traducciones embebidas
             this.translations = this.getFallbackTranslations(this.currentLanguage);
         }
     }
@@ -234,7 +218,6 @@ class I18nManager {
     }
     
     applyTranslations() {
-        // Aplicar traducciones a elementos con data-i18n
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.getAttribute('data-i18n');
             const translation = this.t(key);
@@ -248,14 +231,11 @@ class I18nManager {
             }
         });
         
-        // Aplicar traducciones a elementos con data-i18n-title
         document.querySelectorAll('[data-i18n-title]').forEach(element => {
             const key = element.getAttribute('data-i18n-title');
             const translation = this.t(key);
             element.title = translation;
         });
-        
-        console.log(`🌍 Translations applied for: ${this.currentLanguage}`);
     }
     
     async setLanguage(langCode) {
@@ -269,16 +249,11 @@ class I18nManager {
         
         await this.loadTranslations();
         this.applyTranslations();
-        
-        // Actualizar elementos dinámicos específicos
         this.updateDynamicElements();
         
-        // Trigger custom event para que otros componentes se actualicen
         window.dispatchEvent(new CustomEvent('languageChanged', {
             detail: { language: langCode }
         }));
-        
-        console.log(`🌍 Language changed to: ${langCode}`);
     }
     
     getCurrentLanguage() {
@@ -348,5 +323,3 @@ class I18nManager {
 
 // Crear instancia global
 window.i18n = new I18nManager();
-
-console.log('🌍 I18n Manager loaded');

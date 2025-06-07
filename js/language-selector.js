@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.i18n) {
         updateLanguageSelector(window.i18n.getCurrentLanguage());
     } else {
-        // Si i18n no está listo, esperar un poco
         setTimeout(() => {
             if (window.i18n) {
                 updateLanguageSelector(window.i18n.getCurrentLanguage());
@@ -35,5 +34,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     }
 });
-
-console.log('🌍 Language selector initialized');

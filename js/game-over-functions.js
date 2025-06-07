@@ -1,18 +1,15 @@
 // Funciones para game over con integración Pi Network
 
 async function initializePiNetwork() {
-    console.log('Inicializando conexión con Pi Network...');
-    
     if (!PiNetworkManager.isAvailable()) {
         console.warn('Pi Network SDK no disponible');
         return false;
     }
 
     try {
-        // Inicializar Pi Network al cargar la página
         const success = await window.piNetworkManager.initialize();
         if (success) {
-            console.log('Pi Network disponible y listo');
+            console.log('✅ Pi Network inicializado');
             return true;
         }
     } catch (error) {
@@ -23,26 +20,17 @@ async function initializePiNetwork() {
 }
 
 async function showLeaderboard() {
-    console.log('Mostrando clasificación');
-    
     try {
-        showTempMessage(window.i18n ? window.i18n.t('leaderboard.loading') : 'Cargando clasificación...', 'info');
-        
-        // Crear modal del leaderboard
+        showMessage(window.i18n ? window.i18n.t('leaderboard.loading') : 'Cargando clasificación...', 'info');
         createLeaderboardModal();
-        
-        // Cargar scores
         await loadLeaderboardData('allTime');
-        
     } catch (error) {
         console.error('Error mostrando leaderboard:', error);
-        showTempMessage(window.i18n ? window.i18n.t('leaderboard.error') : 'Error cargando clasificación', 'error');
+        showMessage(window.i18n ? window.i18n.t('leaderboard.error') : 'Error cargando clasificación', 'error');
     }
 }
 
 async function saveScore() {
-    console.log('Intentando guardar puntuación...');
-    
     if (!window.game) {
         console.error('Juego no disponible');
         return;
@@ -51,47 +39,42 @@ async function saveScore() {
     const score = window.game.score;
     const coins = window.game.coins;
 
-    // Verificar que hay puntuación que guardar
     if (score <= 0) {
-        showTempMessage('⚠️ No hay puntuación para guardar', 'warning');
+        showMessage('⚠️ No hay puntuación para guardar', 'warning');
         return;
     }
 
     try {
-        // Verificar que Pi Network está disponible
         if (!PiNetworkManager.isAvailable()) {
-            showTempMessage('❌ Pi Network no disponible', 'error');
+            showMessage('❌ Pi Network no disponible', 'error');
             return;
         }
 
-        // Autenticar si no está autenticado
         if (!window.piNetworkManager.isAuthenticated) {
-            showTempMessage(window.i18n ? window.i18n.t('payment.authenticate') : 'Autenticando con Pi Network...', 'info');
+            showMessage(window.i18n ? window.i18n.t('payment.authenticate') : 'Autenticando con Pi Network...', 'info');
             const authenticated = await window.piNetworkManager.authenticate();
             
             if (!authenticated) {
-                showTempMessage(window.i18n ? window.i18n.t('payment.authError') : 'Error de autenticación', 'error');
+                showMessage(window.i18n ? window.i18n.t('payment.authError') : 'Error de autenticación', 'error');
                 return;
             }
         }
 
-        // Crear pago para guardar puntuación
-        showTempMessage(window.i18n ? window.i18n.t('payment.initiating') : 'Iniciando pago para guardar puntuación...', 'info');
+        showMessage(window.i18n ? window.i18n.t('payment.initiating') : 'Iniciando pago para guardar puntuación...', 'info');
         await window.piNetworkManager.createPaymentForScore(score, coins);
 
     } catch (error) {
         console.error('Error guardando puntuación:', error);
-        showTempMessage('❌ Error al guardar puntuación', 'error');
+        showMessage('❌ Error al guardar puntuación', 'error');
     }
 }
 
-function showTempMessage(message, type = 'info') {
-    // Crear notificación temporal
+// Función unificada para mostrar mensajes (reemplaza showTempMessage)
+function showMessage(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `temp-notification ${type}`;
     notification.textContent = message;
     
-    // Estilos básicos
     Object.assign(notification.style, {
         position: 'fixed',
         top: '20px',
@@ -109,7 +92,6 @@ function showTempMessage(message, type = 'info') {
 
     document.body.appendChild(notification);
 
-    // Remover después de 3 segundos
     setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(-50%) translateY(-20px)';
@@ -120,6 +102,9 @@ function showTempMessage(message, type = 'info') {
         }, 300);
     }, 3000);
 }
+
+// Alias para compatibilidad
+const showTempMessage = showMessage;
 
 function getMessageColor(type) {
     const colors = {
@@ -133,7 +118,6 @@ function getMessageColor(type) {
 
 // Inicializar Pi Network cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando Pi Runner con Pi Network...');
     initializePiNetwork();
 });
 

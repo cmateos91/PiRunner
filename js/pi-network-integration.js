@@ -9,21 +9,16 @@ class PiNetworkManager {
 
     async initialize() {
         try {
-            console.log('Inicializando Pi Network SDK...');
-            
-            // Detectar si estamos en desarrollo/testing
             const isProduction = window.location.hostname !== 'localhost' && 
                                  !window.location.hostname.includes('vercel.app');
             
-            // Inicializar Pi SDK con sandbox para desarrollo
             await Pi.init({ 
                 version: "2.0",
-                sandbox: !isProduction // sandbox en desarrollo, mainnet en producción
+                sandbox: !isProduction
             });
             
             this.isInitialized = true;
-            
-            console.log(`Pi Network SDK inicializado en modo: ${!isProduction ? 'Sandbox' : 'Production'}`);
+            console.log(`✅ Pi Network SDK inicializado (${!isProduction ? 'Sandbox' : 'Production'})`);
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
@@ -38,25 +33,19 @@ class PiNetworkManager {
         }
 
         try {
-            console.log('Autenticando usuario...');
-            
-            // Scopes requeridos para Pi Runner
             const scopes = ['username', 'payments'];
-            
-            // Callback para pagos incompletos
             const onIncompletePaymentFound = (payment) => {
                 console.warn('Pago incompleto encontrado:', payment);
                 this.handleIncompletePayment(payment);
             };
 
-            // Autenticar con Pi Network
             const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
             
             this.isAuthenticated = true;
             this.user = authResult.user;
             this.accessToken = authResult.accessToken;
             
-            console.log('Usuario autenticado:', this.user.username);
+            console.log('✅ Usuario autenticado:', this.user.username);
             this.updateUI();
             
             return true;
@@ -88,29 +77,20 @@ class PiNetworkManager {
 
             const callbacks = {
                 onReadyForServerApproval: (paymentId) => {
-                    console.log('🟡 CALLBACK: onReadyForServerApproval');
-                    console.log('🟡 PaymentId:', paymentId);
                     this.handleServerApproval(paymentId);
                 },
                 
                 onReadyForServerCompletion: (paymentId, txid) => {
-                    console.log('🔥 CALLBACK: onReadyForServerCompletion ejecutado!');
-                    console.log('🔥 PaymentId:', paymentId);
-                    console.log('🔥 TxId:', txid);
                     this.handleServerCompletion(paymentId, txid);
                 },
                 
                 onCancel: (paymentId) => {
-                    console.log('🔴 CALLBACK: onCancel');
-                    console.log('🔴 PaymentId:', paymentId);
-                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.cancelled') : 'Pago cancelado. Puntuación no guardada.', 'warning');
+                    this.showMessage(window.i18n ? window.i18n.t('payment.cancelled') : 'Pago cancelado. Puntuación no guardada.', 'warning');
                 },
                 
                 onError: (error, payment) => {
-                    console.log('❌ CALLBACK: onError');
-                    console.error('❌ Error:', error);
-                    console.error('❌ Payment:', payment);
-                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al procesar el pago. Inténtalo de nuevo.', 'error');
+                    console.error('❌ Payment Error:', error);
+                    this.showMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al procesar el pago. Inténtalo de nuevo.', 'error');
                 }
             };
 
@@ -119,48 +99,40 @@ class PiNetworkManager {
             
         } catch (error) {
             console.error('Error creando pago:', error);
-            this.showPaymentMessage('Error al iniciar el pago.', 'error');
+            this.showMessage('Error al iniciar el pago.', 'error');
             return false;
         }
     }
 
     handleServerApproval(paymentId) {
-        console.log('Enviando para aprobación del servidor:', paymentId);
-        this.showPaymentMessage(window.i18n ? window.i18n.t('payment.processing') : 'Procesando pago...', 'info');
+        this.showMessage(window.i18n ? window.i18n.t('payment.processing') : 'Procesando pago...', 'info');
         
-        // Enviar al backend para aprobación
         this.callBackendAPI('approve', paymentId)
             .then(response => {
-                console.log('Pago aprobado:', response);
+                console.log('✅ Pago aprobado');
             })
             .catch(error => {
                 console.error('Error en aprobación:', error);
-                this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error en la aprobación del pago', 'error');
+                this.showMessage(window.i18n ? window.i18n.t('payment.error') : 'Error en la aprobación del pago', 'error');
             });
     }
 
     handleServerCompletion(paymentId, txid) {
-        console.log('🔥 EJECUTANDO handleServerCompletion');
-        console.log('🔥 PaymentId:', paymentId);
-        console.log('🔥 TxId:', txid);
+        this.showMessage(window.i18n ? window.i18n.t('payment.finalizing') : 'Finalizando pago...', 'info');
         
-        this.showPaymentMessage(window.i18n ? window.i18n.t('payment.finalizing') : 'Finalizando pago...', 'info');
-        
-        // Enviar al backend para completar
         this.callBackendAPI('complete', paymentId, txid)
             .then(response => {
-                console.log('🔥 PAGO COMPLETADO EXITOSAMENTE:', response);
+                console.log('✅ Pago completado exitosamente');
                 
-                // Verificar si fue una mejora
                 if (response.payment && response.wasImprovement === false) {
-                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.noImprovement') : 'Puntuación no mejorada. ¡Intenta superar tu récord! 💪', 'warning');
+                    this.showMessage(window.i18n ? window.i18n.t('payment.noImprovement') : 'Puntuación no mejorada. ¡Intenta superar tu récord! 💪', 'warning');
                 } else {
-                    this.showPaymentMessage(window.i18n ? window.i18n.t('payment.success') : '¡Nuevo récord guardado exitosamente! 🎉', 'success');
+                    this.showMessage(window.i18n ? window.i18n.t('payment.success') : '¡Nuevo récord guardado exitosamente! 🎉', 'success');
                 }
             })
             .catch(error => {
-                console.error('🔥 ERROR EN COMPLETADO:', error);
-                this.showPaymentMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al completar el pago', 'error');
+                console.error('❌ Error al completar pago:', error);
+                this.showMessage(window.i18n ? window.i18n.t('payment.error') : 'Error al completar el pago', 'error');
             });
     }
 
@@ -195,19 +167,23 @@ class PiNetworkManager {
     }
 
     handleIncompletePayment(payment) {
-        // Manejar pagos incompletos encontrados
-        console.log('Procesando pago incompleto:', payment);
-        this.showPaymentMessage('Procesando pago pendiente...', 'info');
+        this.showMessage('Procesando pago pendiente...', 'info');
         // TODO: Enviar a backend para procesar
     }
 
-    showPaymentMessage(message, type = 'info') {
-        // Crear notificación temporal
+    // Usar función unificada de mensajes
+    showMessage(message, type = 'info') {
+        // Si existe la función global showMessage, usarla
+        if (typeof window.showMessage === 'function') {
+            window.showMessage(message, type);
+            return;
+        }
+        
+        // Fallback: implementación local
         const notification = document.createElement('div');
         notification.className = `payment-notification ${type}`;
         notification.textContent = message;
         
-        // Estilos básicos
         Object.assign(notification.style, {
             position: 'fixed',
             top: '20px',
@@ -223,11 +199,12 @@ class PiNetworkManager {
 
         document.body.appendChild(notification);
 
-        // Remover después de 4 segundos
         setTimeout(() => {
             notification.style.opacity = '0';
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
             }, 300);
         }, 4000);
     }
@@ -243,10 +220,8 @@ class PiNetworkManager {
     }
 
     updateUI() {
-        // Actualizar UI con información del usuario
         if (this.isAuthenticated && this.user) {
-            console.log(`Usuario conectado: ${this.user.username}`);
-            // TODO: Mostrar nombre de usuario en la UI si es necesario
+            console.log(`✅ Usuario conectado: ${this.user.username}`);
         }
     }
 

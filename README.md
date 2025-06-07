@@ -1,199 +1,206 @@
-# 🪙 Pi Runner
+# Pi Runner 🏃‍♂️
 
-Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero protagonizado por una moneda Pi dorada. Desarrollado con tecnologías web modernas, optimizado para dispositivos móviles y diseñado con la paleta de colores inspirada en Pi Network.
+Un endless runner optimizado para Pi Network con integración completa de Pi SDK, sistema de pagos y leaderboards globales.
 
-## 🎮 Características
+## 🎮 Características principales
 
-- **Protagonista único**: Moneda Pi dorada con efectos visuales sofisticados
-- **Enemigos matemáticos**: Símbolos matemáticos como Σ, ∫, Δ, ∞, α, β, γ, θ que actúan como obstáculos
-- **Sistema de salto variable**: Intensidad del salto basada en tiempo de carga (400ms máximo)
-- **Supersalto perfecto**: Timing perfecto en ventana de 50ms para salto ultra-potente
-- **Indicadores visuales**: Anillo de carga con feedback en tiempo real y zona perfecta
-- **Física realista**: Sistema de salto, gravedad y colisiones precisas
-- **Efectos espectaculares**: Explosión de fragmentos al chocar, partículas y animaciones
-- **Responsive**: Optimizado para escritorio y móviles
-- **Dificultad progresiva**: Velocidad, frecuencia y tipos de enemigos que aumentan gradualmente
-- **Sistema de recolección**: Monedas Pi para puntuar
-- **Arquitectura modular**: Código organizado y escalable
-- **Diseño cohesivo**: Paleta de colores inspirada en Pi Network para integración visual
-- **Temática matemática**: Guerra entre π y otros símbolos matemáticos
-- **Estética moderna**: Gradientes, sombras y efectos visuales profesionales
+### **Gameplay**
+- **Endless runner** con mecánicas de salto dinámicas
+- **Sistema de carga** de salto para diferentes alturas
+- **Obstáculos matemáticos** con efectos visuales
+- **Recolección de Pi Coins** con fragmentación
+- **Efectos de partículas** avanzados
+- **Audio optimizado** para móviles
 
-## 🚀 Demo
+### **Pi Network Integration**
+- **Pi SDK 2.0** completamente integrado
+- **Pagos en Pi** para guardar puntuaciones
+- **Autenticación** de usuarios Pi Network
+- **Sandbox/Mainnet** automático según entorno
+- **Gestión de pagos incompletos**
 
-[Ver demo en vivo](tu-url-de-github-pages)
+### **Funcionalidades sociales**
+- **Leaderboard global** con filtros temporales
+- **Ranking en tiempo real** (Hoy, Semana, Mes, Todo)
+- **Sistema de mejores puntuaciones**
+- **Perfiles de usuario** Pi Network
 
-## 📱 Capturas de pantalla
+### **UX/UI**
+- **Soporte multiidioma** (English, Español, Hindi)
+- **Input pantalla completa** optimizado para móvil
+- **Interfaz responsive** para todos los dispositivos
+- **Optimizado para Pi Browser**
+- **Controles de audio** integrados
 
-![Gameplay](screenshots/gameplay.png)
-![Explosión](screenshots/explosion.png)
-![Móvil](screenshots/mobile.png)
+## 🛠️ Tecnologías
 
-## 🧮 Enemigos matemáticos
+- **Frontend**: Vanilla JavaScript, HTML5 Canvas, CSS3
+- **Backend**: Node.js, Express, Vercel Functions
+- **Base de datos**: Vercel KV (Redis)
+- **Pagos**: Pi Network SDK
+- **Deploy**: Vercel
 
-El juego presenta una guerra épica entre **π (Pi)** y otros símbolos matemáticos que actúan como enemigos:
+## 🚀 Instalación
 
-### 🔴 Enemigos básicos (0-10 segundos)
-- **Σ (Sigma)** - Sumatoria: Enemigo rojo que representa la acumulación
-- **∫ (Integral)** - Integral: Enemigo púrpura que simboliza el cálculo
-- **Δ (Delta)** - Delta: Enemigo verde que representa el cambio
+### **Requisitos**
+- Node.js 16+
+- Cuenta Vercel
+- Cuenta Pi Network Developer
 
-### 🟠 Enemigos intermedios (10-30 segundos)
-- **∞ (Infinito)** - Infinito: Enemigo naranja con distorsión especial
-- **α (Alpha)** - Alpha: Enemigo púrpura, el primer rival
-- **β (Beta)** - Beta: Enemigo gris oscuro, segundo en la jerarquía
+### **Setup local**
+```bash
+git clone <repository>
+cd PiRunner
+npm install
+cp .env.example .env
+# Configurar variables de entorno
+npm run dev
+```
 
-### 🟣 Enemigos avanzados (30+ segundos)
-- **γ (Gamma)** - Gamma: Enemigo marrón con efectos complejos
-- **θ (Theta)** - Theta: Enemigo rojo oscuro, el más desafiante
+### **Variables de entorno**
+```env
+PI_API_KEY=your_pi_api_key
+KV_REST_API_URL=your_vercel_kv_url
+KV_REST_API_TOKEN=your_vercel_kv_token
+APP_WALLET=your_stellar_wallet_address
+```
 
-### 🎭 Características de los enemigos
-- **Efectos visuales únicos**: Cada enemigo tiene su color y animación
-- **Auras malévolas**: Campos de energía que rodean a los símbolos
-- **Pulsaciones amenazantes**: Respiración y movimiento orgánico
-- **Partículas hostiles**: Efectos de partículas que orbitan alrededor
-- **Progresión narrativa**: Los enemigos aparecen gradualmente según la dificultad
+## 📱 Deploy a Production
 
-## 🎯 Cómo jugar
+### **Vercel Deploy**
+```bash
+vercel --prod
+```
 
-- **Escritorio**: Mantén presionado `ESPACIO` o `FLECHA ARRIBA` para cargar el salto, suelta para ejecutar
-- **Móvil**: Mantén presionado la pantalla para cargar, suelta para saltar
-- **Sistema de salto**: Cuanto más tiempo mantengas presionado, más alto saltarás (máximo 400ms)
-- **Supersalto perfecto**: Suelta exactamente cuando se completa la carga (50ms de ventana) para un salto ultra-potente
-- **Indicador visual**: Anillo dorado que se llena durante la carga, verde cuando está al máximo, cian durante la ventana perfecta
-- **Objetivo**: Evita los símbolos matemáticos enemigos y recolecta monedas Pi
-- **Supervivencia**: Los enemigos se vuelven más frecuentes y variados con el tiempo
-- **Puntuación**: Sobrevive el mayor tiempo posible en la guerra matemática
+### **Pi Network App Registration**
+1. Registrar app en Pi Developer Portal
+2. Configurar dominios permitidos
+3. Actualizar APP_WALLET en variables de entorno
+4. Cambiar a mainnet en pi-network-integration.js
 
-## 🛠️ Tecnologías utilizadas
-
-- **HTML5 Canvas** para renderizado
-- **JavaScript ES6+** con arquitectura modular
-- **CSS3** con animaciones y efectos
-- **Responsive Design** para múltiples dispositivos
-
-## 📁 Estructura del proyecto
+## 🎯 Estructura del proyecto
 
 ```
 PiRunner/
-├── index.html              # Archivo principal
-├── css/                    # Estilos CSS modulares
-│   ├── variables.css       # Variables y utilidades
+├── index.html              # Página principal
+├── css/                    # Estilos
+│   ├── variables.css       # Variables CSS
 │   ├── base.css           # Estilos base
-│   ├── game-container.css # Contenedor del juego
 │   ├── ui.css             # Interfaz de usuario
-│   ├── modal.css          # Modal de game over
-│   ├── animations.css     # Animaciones generales
-│   ├── effects.css        # Efectos especiales
-│   ├── explosion-effects.css # Efectos de explosión
-│   └── math-enemies.css   # Estilos para enemigos matemáticos
-├── js/                     # Módulos JavaScript
-│   ├── Game.js            # Clase principal del juego
-│   ├── Player.js          # Lógica del jugador (moneda π)
-│   ├── ObstacleManager.js # Gestión de enemigos matemáticos
-│   ├── CoinManager.js     # Gestión de monedas Pi
-│   ├── Renderer.js        # Sistema de renderizado
-│   ├── InputHandler.js    # Manejo de controles
-│   ├── CollisionManager.js # Detección de colisiones
-│   ├── GameUI.js          # Interfaz de usuario
-│   ├── ParticleSystem.js  # Sistema de partículas
-│   ├── CoinFragmentSystem.js # Sistema de fragmentos
-│   └── MathEnemyEffects.js # Efectos especiales de enemigos
-└── README.md              # Este archivo
+│   └── ...
+├── js/                     # JavaScript
+│   ├── Game.js            # Motor del juego
+│   ├── Player.js          # Lógica del jugador
+│   ├── InputHandler.js    # Manejo de input
+│   ├── pi-network-integration.js # Pi Network
+│   └── ...
+├── api/                    # Backend APIs
+│   ├── payments.js        # Procesamiento de pagos
+│   ├── leaderboard.js     # Sistema de rankings
+│   └── ...
+├── translations/           # Archivos de idiomas
+├── sounds/                # Audio assets
+└── lib/                   # Utilidades backend
 ```
 
-## 🚀 Instalación y uso
+## 🎮 Cómo jugar
 
-### Opción 1: Descarga directa
-1. Clona o descarga este repositorio
-2. Abre `index.html` en tu navegador
-3. ¡A jugar!
+1. **Salto básico**: Toca cualquier parte de la pantalla
+2. **Salto de carga**: Mantén presionado para saltar más alto
+3. **Recolecta Pi Coins**: Toca las monedas para sumar puntos
+4. **Evita obstáculos**: Esquiva las operaciones matemáticas
+5. **Guarda tu puntuación**: Usa Pi Network para el leaderboard
 
-### Opción 2: Servidor local
-```bash
-# Clona el repositorio
-git clone https://github.com/tu-usuario/pi-runner.git
-cd pi-runner
+## 🌍 Idiomas soportados
 
-# Sirve con cualquier servidor HTTP estático
-# Python 3
-python -m http.server 8000
+- **English** (en) - Idioma por defecto
+- **Español** (es) - Mercado hispanohablante  
+- **Hindi** (hi) - Comunidad Pi Network India
 
-# Python 2
-python -m SimpleHTTPServer 8000
+## 📊 APIs disponibles
 
-# Node.js (con live-server)
-npx live-server
-
-# Abre http://localhost:8000 en tu navegador
+### **GET /api/leaderboard**
+```javascript
+// Obtener rankings
+?type=allTime|daily|weekly|monthly&limit=20
 ```
 
-## 🎨 Características técnicas
+### **POST /api/payments**
+```javascript
+// Procesar pagos Pi Network
+{
+  "action": "approve|complete",
+  "paymentId": "payment_id",
+  "txid": "transaction_id" // solo para complete
+}
+```
 
-### Sistema de enemigos matemáticos
-Los obstáculos ahora son símbolos matemáticos con:
-- **8 tipos diferentes** de enemigos con progresión temporal
-- **Efectos visuales únicos** para cada símbolo
-- **Auras malévolas** y campos de energía
-- **Animaciones orgánicas** con pulsación y respiración
-- **Colores temáticos** específicos por enemigo
-- **Spawn múltiple** ocasional para mayor desafío
-### Sistema de fragmentación
-Al chocar con un enemigo matemático, la moneda se descompone en 25-40 mini monedas con:
-- **Física realista**: Gravedad, rebotes múltiples y fricción
-- **Dispersión natural**: Ángulos y velocidades aleatorias
-- **Persistencia visual**: Los fragmentos permanecen en el suelo
-- **Gradientes únicos**: Cada fragmento tiene su propia coloración
+## 🔧 Configuración Pi Network
 
-### Optimizaciones móviles
-- **Canvas responsivo** con soporte para alta densidad de píxeles
-- **Controles táctiles** optimizados
-- **Prevención de zoom** y comportamientos no deseados
-- **Elementos escalados** según el dispositivo
-- **Performance ajustada** para dispositivos móviles
+### **Mainnet Setup**
+```javascript
+// pi-network-integration.js
+const isProduction = true; // Cambiar a true para mainnet
+await Pi.init({ 
+    version: "2.0",
+    sandbox: false // false para mainnet
+});
+```
 
-### Arquitectura modular
-- **Separación de responsabilidades**: Cada clase tiene una función específica
-- **Fácil mantenimiento**: Código organizado y documentado
-- **Escalabilidad**: Preparado para futuras características
-- **Reutilización**: Componentes independientes
+### **App Config**
+- **App Name**: Pi Runner
+- **App Categories**: Games, Entertainment
+- **Allowed Domains**: tu-dominio.vercel.app
 
-## 🔮 Roadmap
+## 🎯 Performance
 
-- [ ] **Integración con Pi Network blockchain**
-- [ ] **Sistema de logros y recompensas**
-- [ ] **Múltiples personajes y skins**
-- [ ] **Diferentes biomas y escenarios**
-- [ ] **Tabla de puntuaciones global**
-- [ ] **Modo multijugador**
-- [ ] **Power-ups y habilidades especiales**
+### **Optimizaciones implementadas**
+- **Canvas rendering** optimizado
+- **Audio lazy loading** para móviles
+- **Particle system** eficiente
+- **Event delegation** para mejor performance
+- **Bundle optimizado** sin librerías innecesarias
+
+### **Métricas objetivo**
+- **FPS**: 60fps en dispositivos modernos
+- **Load time**: <2s primera carga
+- **Memory usage**: <50MB en Pi Browser
+- **Battery impact**: Minimizado
+
+## 🛡️ Seguridad
+
+- **Validación** de pagos en backend
+- **Rate limiting** en APIs
+- **Input sanitization** completa
+- **CORS** configurado correctamente
+- **Environment variables** para secretos
+
+## 📈 Analytics & Monitoring
+
+- **Error tracking** en producción
+- **Performance monitoring** integrado
+- **User behavior** analytics ready
+- **Payment success** tracking
 
 ## 🤝 Contribuir
 
-¡Las contribuciones son bienvenidas! Por favor:
+1. Fork del proyecto
+2. Crear feature branch
+3. Commit cambios
+4. Push a branch
+5. Crear Pull Request
 
-1. Haz fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## 📄 Licencia
 
-## 📝 Licencia
+[Especificar licencia]
 
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+## 🎊 Créditos
 
-## 🙏 Agradecimientos
-
-- Inspirado en el juego del dinosaurio de Chrome
-- Iconografía basada en el símbolo Pi (π)
-- Desarrollado con amor para la comunidad Pi Network
-
-## 📧 Contacto
-
-Tu Nombre - [@tu_usuario](https://twitter.com/tu_usuario) - tu@email.com
-
-Link del Proyecto: [https://github.com/tu-usuario/pi-runner](https://github.com/tu-usuario/pi-runner)
+Desarrollado para la comunidad Pi Network con ❤️
 
 ---
 
-⭐ **¡Dale una estrella al proyecto si te gustó!** ⭐
+**🚀 Listo para mainnet Pi Network** 🚀
+
+Para soporte: [tu-email]
+Pi Network: [tu-usuario-pi]
