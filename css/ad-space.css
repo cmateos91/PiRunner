@@ -1,0 +1,158 @@
+/* Espacio para anuncios y optimizaciones adicionales */
+
+/* Área reservada para anuncios en la parte inferior */
+#adSpace {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--pi-gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+#adSpace.hidden {
+    transform: translateY(100%);
+}
+
+#adSpace .ad-placeholder {
+    color: var(--pi-gray-400);
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.5;
+}
+
+/* Ajustar el contenedor del juego para dejar espacio para anuncios */
+body:not(.no-ads) #gameContainer {
+    margin-bottom: 60px;
+    height: calc(90vh - 60px);
+}
+
+/* Para Pi Browser con anuncios */
+body.pi-browser:not(.no-ads) #gameContainer {
+    height: calc(90vh - 60px);
+}
+
+/* Botón para ocultar/mostrar área de anuncios (para testing) */
+#toggleAds {
+    position: fixed;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    background: rgba(31, 41, 55, 0.8);
+    border: 1px solid var(--pi-gray-600);
+    color: var(--pi-gray-300);
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 1001;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+#toggleAds:hover {
+    opacity: 1;
+}
+
+/* Responsive para diferentes tamaños de anuncios */
+@media (max-width: 480px) {
+    #adSpace {
+        height: 50px;
+    }
+    
+    body:not(.no-ads) #gameContainer {
+        margin-bottom: 50px;
+        height: calc(90vh - 50px);
+    }
+    
+    body.pi-browser:not(.no-ads) #gameContainer {
+        height: calc(90vh - 50px);
+    }
+}
+
+@media (min-width: 768px) {
+    #adSpace {
+        height: 80px;
+    }
+    
+    body:not(.no-ads) #gameContainer {
+        margin-bottom: 80px;
+        height: calc(60vh - 80px);
+    }
+}
+
+/* Estilos para cuando hay anuncios reales */
+#adSpace .ad-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+}
+
+/* Banner ads responsivos */
+#adSpace .banner-ad {
+    max-width: 320px;
+    max-height: 50px;
+    width: 100%;
+    height: auto;
+}
+
+@media (min-width: 728px) {
+    #adSpace .banner-ad {
+        max-width: 728px;
+        max-height: 90px;
+    }
+}
+
+/* Mejorar la transición entre estados */
+body.loading-ads #adSpace {
+    background: rgba(17, 24, 39, 0.5);
+}
+
+body.loading-ads #adSpace::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Optimización específica para Pi Network Ads */
+#adSpace .pi-ad {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Estados especiales del área de anuncios */
+#adSpace.error {
+    background: rgba(185, 28, 28, 0.1);
+    border-top-color: rgba(185, 28, 28, 0.3);
+}
+
+#adSpace.loading {
+    background: rgba(59, 130, 246, 0.1);
+    border-top-color: rgba(59, 130, 246, 0.3);
+}
+
+#adSpace.success {
+    background: rgba(16, 185, 129, 0.1);
+    border-top-color: rgba(16, 185, 129, 0.3);
+}

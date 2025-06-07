@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/pi-notifications.css">
     <link rel="stylesheet" href="css/leaderboard.css">
     <link rel="stylesheet" href="css/pi-browser-optimizations.css">
+    <link rel="stylesheet" href="css/ad-space.css">
     
     <!-- Pi Network SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -47,6 +48,18 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Espacio reservado para anuncios futuros -->
+        <div id="adSpace">
+            <div class="ad-placeholder">
+                📱 Espacio reservado para anuncios • Pi Network Ads Ready
+            </div>
+        </div>
+        
+        <!-- Toggle para testing (removible en producción) -->
+        <button id="toggleAds" onclick="toggleAdSpace()" title="Toggle Ad Space">
+            📺
+        </button>
     </div>
     
     <!-- JavaScript Core Files -->
@@ -65,6 +78,7 @@
     <script src="js/CollisionManager.js"></script>
     <script src="js/GameUI.js"></script>
     <script src="js/Game.js"></script>
+    <script src="js/AdSpaceManager.js"></script>
     <script src="js/audio-controls.js"></script>
     <script src="js/pi-network-integration.js"></script>
     <script src="js/game-over-functions.js"></script>
