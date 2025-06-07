@@ -1,0 +1,309 @@
+/* Efectos CSS para el sistema de salto variable */
+
+/* Animación del indicador de carga de salto */
+@keyframes chargeGlow {
+    0% {
+        filter: drop-shadow(0 0 4px var(--pi-gold-primary));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 12px var(--pi-gold-primary)) drop-shadow(0 0 20px var(--pi-gold-light));
+        transform: scale(1.02);
+    }
+    100% {
+        filter: drop-shadow(0 0 4px var(--pi-gold-primary));
+        transform: scale(1);
+    }
+}
+
+/* Animación para carga máxima */
+@keyframes maxChargeGlow {
+    0% {
+        filter: 
+            drop-shadow(0 0 8px #00FF88) 
+            drop-shadow(0 0 16px #00FFAA) 
+            brightness(1.1);
+        transform: scale(1);
+    }
+    50% {
+        filter: 
+            drop-shadow(0 0 15px #00FF88) 
+            drop-shadow(0 0 25px #00FFAA) 
+            brightness(1.2);
+        transform: scale(1.05);
+    }
+    100% {
+        filter: 
+            drop-shadow(0 0 8px #00FF88) 
+            drop-shadow(0 0 16px #00FFAA) 
+            brightness(1.1);
+        transform: scale(1);
+    }
+}
+
+/* Clase para aplicar cuando se está cargando el salto */
+.charging-jump {
+    animation: chargeGlow 1s infinite ease-in-out;
+}
+
+/* Animación para timing perfecto */
+@keyframes perfectTimingGlow {
+    0% {
+        filter: 
+            drop-shadow(0 0 10px #00FFFF) 
+            drop-shadow(0 0 20px #00FFAA) 
+            brightness(1.3);
+        transform: scale(1);
+    }
+    50% {
+        filter: 
+            drop-shadow(0 0 20px #00FFFF) 
+            drop-shadow(0 0 35px #00FFAA) 
+            brightness(1.5);
+        transform: scale(1.08);
+    }
+    100% {
+        filter: 
+            drop-shadow(0 0 10px #00FFFF) 
+            drop-shadow(0 0 20px #00FFAA) 
+            brightness(1.3);
+        transform: scale(1);
+    }
+}
+
+/* Clase para aplicar cuando se está en ventana de timing perfecto */
+.perfect-timing-window {
+    animation: perfectTimingGlow 0.2s infinite ease-in-out;
+}
+
+/* Efecto de supersalto exitoso */
+@keyframes superJumpSuccess {
+    0% {
+        filter: 
+            drop-shadow(0 0 15px #00FFFF) 
+            drop-shadow(0 0 25px #FFFFFF) 
+            brightness(1.5);
+        transform: scale(1.1);
+    }
+    50% {
+        filter: 
+            drop-shadow(0 0 25px #00FFFF) 
+            drop-shadow(0 0 40px #FFFFFF) 
+            brightness(1.8);
+        transform: scale(1.15);
+    }
+    100% {
+        filter: 
+            drop-shadow(0 0 5px #00FFFF) 
+            brightness(1.2);
+        transform: scale(1.05);
+    }
+}
+
+.super-jump-success {
+    animation: superJumpSuccess 0.4s ease-out forwards;
+}
+
+/* Onda de choque visual para supersalto */
+@keyframes shockwaveExpand {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+        border-width: 3px;
+    }
+    50% {
+        opacity: 0.6;
+        border-width: 2px;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+        border-width: 1px;
+    }
+}
+
+.shockwave-ring {
+    position: absolute;
+    border: 3px solid #00FFFF;
+    border-radius: 50%;
+    animation: shockwaveExpand 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+/* Efecto de rayos para timing perfecto */
+@keyframes perfectRays {
+    0% {
+        opacity: 0.8;
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: rotate(180deg) scale(1.2);
+    }
+    100% {
+        opacity: 0.6;
+        transform: rotate(360deg) scale(0.8);
+    }
+}
+
+.perfect-timing-rays {
+    animation: perfectRays 0.5s ease-in-out infinite;
+}
+
+/* Indicador de zona perfecta en la UI */
+.perfect-zone-indicator {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00FFFF;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00FFFF;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.perfect-zone-indicator.active {
+    opacity: 1;
+    animation: pulse 0.5s infinite ease-in-out;
+}
+
+/* Feedback visual mejorado para diferentes tipos de salto */
+.jump-perfect {
+    filter: 
+        brightness(1.5) 
+        drop-shadow(0 0 20px #00FFFF) 
+        drop-shadow(0 0 30px #FFFFFF);
+}
+
+/* Actualización de los efectos existentes */
+.jump-max {
+    filter: brightness(1.3) drop-shadow(0 0 15px #00FF88) drop-shadow(0 0 20px #00FFAA);
+}
+
+/* Efecto de ondas de impacto en el suelo */
+@keyframes groundImpact {
+    0% {
+        transform: scaleX(1) scaleY(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scaleX(1.5) scaleY(0.3);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scaleX(2) scaleY(0.1);
+        opacity: 0;
+    }
+}
+
+.ground-impact {
+    position: absolute;
+    width: 40px;
+    height: 8px;
+    background: radial-gradient(ellipse, var(--pi-gold-primary), transparent);
+    animation: groundImpact 0.3s ease-out forwards;
+    pointer-events: none;
+}
+
+/* Efecto de estela para saltos potentes */
+@keyframes powerJumpTrail {
+    0% {
+        opacity: 0.8;
+        transform: scale(1);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5);
+        filter: blur(2px);
+    }
+}
+
+.power-jump-trail {
+    position: absolute;
+    background: radial-gradient(circle, var(--pi-gold-primary), transparent);
+    border-radius: 50%;
+    animation: powerJumpTrail 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+/* Feedback visual para diferentes intensidades de salto */
+.jump-weak {
+    filter: brightness(1);
+}
+
+.jump-medium {
+    filter: brightness(1.1) drop-shadow(0 0 5px var(--pi-gold-primary));
+}
+
+.jump-strong {
+    filter: brightness(1.2) drop-shadow(0 0 10px var(--pi-gold-primary)) drop-shadow(0 0 15px var(--pi-gold-light));
+}
+
+.jump-max {
+    filter: brightness(1.3) drop-shadow(0 0 15px #00FF88) drop-shadow(0 0 20px #00FFAA);
+}
+
+/* Animación de preparación de salto */
+@keyframes jumpPrep {
+    0% {
+        transform: scaleY(1);
+    }
+    100% {
+        transform: scaleY(0.95);
+    }
+}
+
+.jump-preparation {
+    animation: jumpPrep 0.1s ease-out forwards;
+}
+
+/* Indicadores de intensidad en la UI */
+.jump-intensity-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    display: none;
+}
+
+.jump-intensity-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pi-gold-primary), #00FF88);
+    border-radius: 4px;
+    transition: width 0.1s ease-out;
+    width: 0%;
+}
+
+.jump-intensity-indicator.active {
+    display: block;
+    animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Efecto de vibración sutil para retroalimentación táctil simulada */
+@keyframes subtleVibration {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-0.5px); }
+    75% { transform: translateX(0.5px); }
+}
+
+.charge-vibration {
+    animation: subtleVibration 0.1s infinite;
+}

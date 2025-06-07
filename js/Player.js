@@ -11,13 +11,92 @@ class Player {
         this.velocityY = 0;
         this.isJumping = false;
         this.groundY = this.gameHeight - (this.isMobile ? 90 : 120);
+        
+        // Sistema de salto variable
+        this.isCharging = false;
+        this.chargeStartTime = 0;
+        this.minJumpForce = this.isMobile ? -11 : -13;
+        this.maxJumpForce = this.isMobile ? -16 : -18;
+        this.superJumpForce = this.isMobile ? -22 : -25; // Supersalto
+        this.maxChargeTime = 400; // 400ms máximo de carga
+        this.perfectWindow = 50; // 50ms de ventana para timing perfecto
+        this.currentJumpForce = this.minJumpForce;
     }
     
-    jump() {
-        if (!this.isJumping) {
-            this.velocityY = this.isMobile ? -13 : -15;
-            this.isJumping = true;
+    startJump() {
+        if (!this.isJumping && !this.isCharging) {
+            this.isCharging = true;
+            this.chargeStartTime = Date.now();
+            return true;
         }
+        return false;
+    }
+    
+    executeJump() {
+        if (this.isCharging && !this.isJumping) {
+            const chargeTime = Date.now() - this.chargeStartTime;
+            const chargeRatio = Math.min(chargeTime / this.maxChargeTime, 1);
+            
+            // Verificar si está en la ventana de timing perfecto
+            const isPerfectTiming = chargeTime >= this.maxChargeTime && 
+                                  chargeTime <= this.maxChargeTime + this.perfectWindow;
+            
+            let jumpType = 'normal';
+            
+            if (isPerfectTiming) {
+                // Supersalto por timing perfecto
+                this.currentJumpForce = this.superJumpForce;
+                jumpType = 'perfect';
+            } else {
+                // Interpolación normal entre fuerza mínima y máxima
+                this.currentJumpForce = this.minJumpForce + (this.maxJumpForce - this.minJumpForce) * chargeRatio;
+            }
+            
+            this.velocityY = this.currentJumpForce;
+            this.isJumping = true;
+            this.isCharging = false;
+            
+            return {
+                jumpForce: this.currentJumpForce,
+                chargeTime: chargeTime,
+                chargeRatio: chargeRatio,
+                jumpType: jumpType,
+                isPerfect: isPerfectTiming
+            };
+        }
+        return null;
+    }
+    
+    cancelJump() {
+        if (this.isCharging) {
+            this.isCharging = false;
+            return true;
+        }
+        return false;
+    }
+    
+    // Método legacy para compatibilidad
+    jump() {
+        this.startJump();
+        return this.executeJump();
+    }
+    
+    getChargeStatus() {
+        if (!this.isCharging) return null;
+        
+        const chargeTime = Date.now() - this.chargeStartTime;
+        const chargeRatio = Math.min(chargeTime / this.maxChargeTime, 1);
+        const isInPerfectWindow = chargeTime >= this.maxChargeTime && 
+                                chargeTime <= this.maxChargeTime + this.perfectWindow;
+        
+        return {
+            chargeTime: chargeTime,
+            chargeRatio: chargeRatio,
+            isMaxCharge: chargeRatio >= 1,
+            isInPerfectWindow: isInPerfectWindow,
+            perfectWindowProgress: isInPerfectWindow ? 
+                (chargeTime - this.maxChargeTime) / this.perfectWindow : 0
+        };
     }
     
     update() {
@@ -39,6 +118,11 @@ class Player {
         this.isMobile = isMobile;
         this.groundY = this.gameHeight - (this.isMobile ? 90 : 120);
         
+        // Actualizar fuerzas de salto según el dispositivo
+        this.minJumpForce = this.isMobile ? -11 : -13;
+        this.maxJumpForce = this.isMobile ? -16 : -18;
+        this.superJumpForce = this.isMobile ? -22 : -25;
+        
         if (!this.isJumping) {
             this.y = this.groundY;
         }
@@ -48,6 +132,11 @@ class Player {
         const centerX = this.x + this.width/2;
         const centerY = this.y + this.height/2;
         const radius = this.width/2;
+        
+        // Indicador de carga de salto
+        if (this.isCharging) {
+            this.renderChargeIndicator(ctx, centerX, centerY, radius);
+        }
         
         // Sombra de la moneda
         ctx.save();
@@ -150,6 +239,104 @@ class Player {
         }
     }
     
+    renderChargeIndicator(ctx, centerX, centerY, radius) {
+        const chargeStatus = this.getChargeStatus();
+        if (!chargeStatus) return;
+        
+        const indicatorRadius = radius + 8;
+        const chargeAngle = chargeStatus.chargeRatio * Math.PI * 2;
+        
+        // Anillo de carga base
+        ctx.save();
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        
+        // Fondo del anillo
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, indicatorRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Progreso del anillo
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, indicatorRadius, -Math.PI / 2, -Math.PI / 2 + chargeAngle);
+        ctx.stroke();
+        
+        // Zona de timing perfecto
+        if (chargeStatus.isMaxCharge) {
+            // Anillo de timing perfecto
+            ctx.strokeStyle = chargeStatus.isInPerfectWindow ? '#00FFFF' : '#00FF88';
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.6;
+            
+            // Zona de timing perfecto (pequeña sección después del círculo completo)
+            const perfectStartAngle = -Math.PI / 2;
+            const perfectEndAngle = perfectStartAngle + (this.perfectWindow / this.maxChargeTime) * Math.PI * 2;
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, indicatorRadius + 3, perfectStartAngle, perfectEndAngle);
+            ctx.stroke();
+            
+            // Pulso intenso durante ventana perfecta
+            if (chargeStatus.isInPerfectWindow) {
+                const pulseIntensity = 0.7 + Math.sin(Date.now() * 0.05) * 0.3;
+                ctx.globalAlpha = pulseIntensity;
+                ctx.strokeStyle = '#00FFFF';
+                ctx.lineWidth = 6;
+                ctx.shadowColor = '#00FFFF';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, indicatorRadius + 5, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+                
+                // Efecto de rayos durante timing perfecto
+                this.renderPerfectTimingRays(ctx, centerX, centerY, radius + 15);
+            } else {
+                // Pulso normal en máxima carga
+                const pulseIntensity = 0.5 + Math.sin(Date.now() * 0.02) * 0.3;
+                ctx.globalAlpha = pulseIntensity;
+                ctx.strokeStyle = '#00FF88';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, indicatorRadius + 2, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+        
+        ctx.restore();
+    }
+    
+    renderPerfectTimingRays(ctx, centerX, centerY, radius) {
+        const rayCount = 8;
+        const time = Date.now() * 0.01;
+        
+        ctx.save();
+        ctx.strokeStyle = '#00FFFF';
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.8;
+        
+        for (let i = 0; i < rayCount; i++) {
+            const angle = (i / rayCount) * Math.PI * 2 + time;
+            const innerRadius = radius;
+            const outerRadius = radius + 8 + Math.sin(time + i) * 3;
+            
+            const startX = centerX + Math.cos(angle) * innerRadius;
+            const startY = centerY + Math.sin(angle) * innerRadius;
+            const endX = centerX + Math.cos(angle) * outerRadius;
+            const endY = centerY + Math.sin(angle) * outerRadius;
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+        }
+        
+        ctx.restore();
+    }
+    
     renderSparkles(ctx, centerX, centerY, radius) {
         const sparkles = 6;
         const time = Date.now() * 0.01;
@@ -174,5 +361,8 @@ class Player {
         this.y = this.groundY;
         this.velocityY = 0;
         this.isJumping = false;
+        this.isCharging = false;
+        this.chargeStartTime = 0;
+        this.currentJumpForce = this.minJumpForce;
     }
 }

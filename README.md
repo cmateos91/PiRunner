@@ -6,6 +6,9 @@ Un juego de runner infinito inspirado en el clásico dinosaurio de Chrome, pero 
 
 - **Protagonista único**: Moneda Pi dorada con efectos visuales sofisticados
 - **Enemigos matemáticos**: Símbolos matemáticos como Σ, ∫, Δ, ∞, α, β, γ, θ que actúan como obstáculos
+- **Sistema de salto variable**: Intensidad del salto basada en tiempo de carga (400ms máximo)
+- **Supersalto perfecto**: Timing perfecto en ventana de 50ms para salto ultra-potente
+- **Indicadores visuales**: Anillo de carga con feedback en tiempo real y zona perfecta
 - **Física realista**: Sistema de salto, gravedad y colisiones precisas
 - **Efectos espectaculares**: Explosión de fragmentos al chocar, partículas y animaciones
 - **Responsive**: Optimizado para escritorio y móviles
@@ -53,8 +56,11 @@ El juego presenta una guerra épica entre **π (Pi)** y otros símbolos matemát
 
 ## 🎯 Cómo jugar
 
-- **Escritorio**: Presiona `ESPACIO` o `FLECHA ARRIBA` para saltar
-- **Móvil**: Toca la pantalla para saltar
+- **Escritorio**: Mantén presionado `ESPACIO` o `FLECHA ARRIBA` para cargar el salto, suelta para ejecutar
+- **Móvil**: Mantén presionado la pantalla para cargar, suelta para saltar
+- **Sistema de salto**: Cuanto más tiempo mantengas presionado, más alto saltarás (máximo 400ms)
+- **Supersalto perfecto**: Suelta exactamente cuando se completa la carga (50ms de ventana) para un salto ultra-potente
+- **Indicador visual**: Anillo dorado que se llena durante la carga, verde cuando está al máximo, cian durante la ventana perfecta
 - **Objetivo**: Evita los símbolos matemáticos enemigos y recolecta monedas Pi
 - **Supervivencia**: Los enemigos se vuelven más frecuentes y variados con el tiempo
 - **Puntuación**: Sobrevive el mayor tiempo posible en la guerra matemática

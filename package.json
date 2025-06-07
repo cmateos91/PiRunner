@@ -1,6 +1,6 @@
 {
   "name": "pi-runner",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "description": "Un juego de runner infinito protagonizado por una moneda Pi dorada",
   "main": "index.html",
   "scripts": {

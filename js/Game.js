@@ -69,19 +69,52 @@ class PiRunner {
         return window.innerWidth <= 768 || 'ontouchstart' in window;
     }
     
-    handleJump() {
+    handleJumpStart() {
         if (this.gameState === 'playing') {
-            const wasJumping = this.player.isJumping;
-            this.player.jump();
+            this.player.startJump();
+        }
+    }
+    
+    handleJumpEnd() {
+        if (this.gameState === 'playing') {
+            const jumpResult = this.player.executeJump();
             
-            // Crear efecto de partículas solo si realmente saltó
-            if (!wasJumping && this.player.isJumping) {
-                this.particleSystem.createJumpEffect(
-                    this.player.x + this.player.width/2,
-                    this.player.y + this.player.height
-                );
+            if (jumpResult) {
+                // Crear efecto de partículas basado en el tipo de salto
+                if (jumpResult.isPerfect) {
+                    // Supersalto - efectos especiales
+                    this.particleSystem.createSuperJumpEffect(
+                        this.player.x + this.player.width/2,
+                        this.player.y + this.player.height
+                    );
+                    
+                    // Efecto de onda de choque
+                    this.particleSystem.createShockwave(
+                        this.player.x + this.player.width/2,
+                        this.player.y + this.player.height
+                    );
+                } else {
+                    // Salto normal con intensidad variable
+                    this.particleSystem.createJumpEffect(
+                        this.player.x + this.player.width/2,
+                        this.player.y + this.player.height,
+                        jumpResult.chargeRatio
+                    );
+                }
             }
         }
+    }
+    
+    handleJumpCancel() {
+        if (this.gameState === 'playing') {
+            this.player.cancelJump();
+        }
+    }
+    
+    // Método legacy para compatibilidad
+    handleJump() {
+        this.handleJumpStart();
+        this.handleJumpEnd();
     }
     
     update() {
@@ -231,6 +264,7 @@ class PiRunner {
         this.coinManager.clear();
         this.particleSystem.clear();
         this.coinFragmentSystem.clear();
+        this.inputHandler.reset();
         
         GameUI.hideGameOver();
     }

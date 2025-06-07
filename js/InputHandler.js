@@ -2,6 +2,8 @@ class InputHandler {
     constructor(canvas, game) {
         this.canvas = canvas;
         this.game = game;
+        this.isKeyPressed = false;
+        this.isTouchActive = false;
         this.setupControls();
     }
     
@@ -22,24 +24,80 @@ class InputHandler {
             lastTouchEnd = now;
         }, false);
         
-        // Controles de teclado
+        // Controles de teclado - Sistema de carga
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
+            if ((e.code === 'Space' || e.code === 'ArrowUp') && !this.isKeyPressed) {
                 e.preventDefault();
-                this.game.handleJump();
+                this.isKeyPressed = true;
+                this.game.handleJumpStart();
             }
         });
         
-        // Controles táctiles optimizados
+        document.addEventListener('keyup', (e) => {
+            if ((e.code === 'Space' || e.code === 'ArrowUp') && this.isKeyPressed) {
+                e.preventDefault();
+                this.isKeyPressed = false;
+                this.game.handleJumpEnd();
+            }
+        });
+        
+        // Controles táctiles - Sistema de carga
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            this.game.handleJump();
+            if (!this.isTouchActive) {
+                this.isTouchActive = true;
+                this.game.handleJumpStart();
+            }
         }, { passive: false });
         
-        // Click para escritorio
-        this.canvas.addEventListener('click', (e) => {
+        this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            this.game.handleJump();
+            if (this.isTouchActive) {
+                this.isTouchActive = false;
+                this.game.handleJumpEnd();
+            }
+        }, { passive: false });
+        
+        this.canvas.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            if (this.isTouchActive) {
+                this.isTouchActive = false;
+                this.game.handleJumpCancel();
+            }
+        }, { passive: false });
+        
+        // Click para escritorio - Sistema de carga
+        this.canvas.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            if (!this.isKeyPressed) { // Evitar duplicados con teclado
+                this.game.handleJumpStart();
+            }
         });
+        
+        this.canvas.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            if (!this.isKeyPressed) { // Evitar duplicados con teclado
+                this.game.handleJumpEnd();
+            }
+        });
+        
+        // Manejar cuando el mouse sale del canvas
+        this.canvas.addEventListener('mouseleave', (e) => {
+            if (!this.isKeyPressed) {
+                this.game.handleJumpCancel();
+            }
+        });
+        
+        // Manejar pérdida de foco de la ventana
+        window.addEventListener('blur', () => {
+            this.isKeyPressed = false;
+            this.isTouchActive = false;
+            this.game.handleJumpCancel();
+        });
+    }
+    
+    reset() {
+        this.isKeyPressed = false;
+        this.isTouchActive = false;
     }
 }

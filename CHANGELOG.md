@@ -5,6 +5,85 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-06-07
+
+### Added - Supersalto Perfecto
+- ⚡ **Timing perfecto**: Ventana de 50ms después de completar la carga para supersalto
+- 🎯 **Precisión extrema**: Requiere timing exacto para activar el supersalto
+- 💫 **Efectos especiales**: Partículas cian, ondas de choque y rayos visuales
+- 🌟 **Fuerza multiplicada**: Supersalto 40% más potente que el salto máximo
+- 🎨 **Feedback visual único**: Indicadores visuales específicos para timing perfecto
+
+### Enhanced
+- 🔵 **Zona perfecta visual**: Anillo cian que indica cuándo hacer el supersalto
+- ⚡ **Efectos de partículas especiales**: 12 partículas multicolor para supersalto
+- 🌊 **Onda de choque**: Efecto radial de 8 partículas al lograr supersalto
+- ✨ **Rayos perfectos**: Efectos de rayos giratorios durante ventana perfecta
+- 🎪 **Animaciones mejoradas**: Nuevas animaciones CSS para timing perfecto
+
+### Gameplay Mechanics
+- **Ventana perfecta**: 50ms después de los 400ms de carga completa
+- **Supersalto**: -22/-25 de fuerza (vs -16/-18 del máximo normal)
+- **Indicadores**: Dorado → Verde → Cian (ventana perfecta)
+- **Efectos visuales**: Distinguir visualmente cada tipo de salto
+- **Skill ceiling**: Mecánica avanzada para jugadores expertos
+
+### Technical Features
+- **Perfect timing detection**: Sistema preciso de detección de timing
+- **Enhanced particle system**: Nuevos efectos para supersalto y ondas
+- **Visual feedback system**: Múltiples capas de feedback visual
+- **CSS animations**: Animaciones específicas para timing perfecto
+- **Performance optimized**: Efectos complejos optimizados para móviles
+
+### Visual Effects
+- **Perfect window**: Pulso cian intenso y rayos giratorios
+- **Super jump particles**: 12 partículas cian, blancas y verdes
+- **Shockwave effect**: Onda expansiva circular
+- **Enhanced indicators**: Zona perfecta claramente diferenciada
+- **Success feedback**: Animación especial al lograr supersalto
+
+## [1.3.0] - 2025-06-07
+
+### Added - Sistema de Salto Variable
+- 🎮 **Salto cargable**: Mantén presionado para cargar la fuerza del salto
+- ⏱️ **Control temporal**: 400ms de tiempo máximo de carga
+- 📊 **Indicador visual**: Anillo dorado que muestra el progreso de carga
+- ✨ **Feedback inmediato**: Color verde cuando se alcanza la carga máxima
+- 🎯 **Precisión mejorada**: Control más preciso para obstáculos complejos
+
+### Enhanced
+- 🎛️ **Sistema de input avanzado**: Soporte para hold/release en todos los dispositivos
+- 💫 **Efectos de partículas dinámicos**: Intensidad basada en la fuerza del salto
+- 🎪 **Animaciones mejoradas**: Indicadores visuales durante la carga
+- 📱 **Controles táctiles mejorados**: Mejor respuesta en dispositivos móviles
+
+### Gameplay Mechanics
+- **Fuerza mínima**: Salto básico para obstáculos bajos
+- **Fuerza máxima**: Salto potente para obstáculos altos o gaps largos
+- **Interpolación suave**: Transición gradual entre fuerzas
+- **Cancelación**: Posibilidad de cancelar la carga
+- **Estados del salto**: Preparación, carga, ejecución y aterrizaje
+
+### Technical Features
+- **Input handling mejorado**: Gestión de eventos de presión/liberación
+- **Timer de carga**: Sistema preciso de medición temporal
+- **Rendering dinámico**: Indicadores visuales en tiempo real
+- **Estados de jugador**: Sistema de estados para el salto
+- **CSS effects**: Nuevas animaciones para el sistema de carga
+
+### Visual Feedback
+- **Anillo de carga**: Progreso visual circular alrededor del jugador
+- **Colores dinámicos**: Dorado → Verde según la intensidad
+- **Partículas variables**: 3-7 partículas según la fuerza del salto
+- **Efectos de aterrizaje**: Impacto visual proporcional al salto
+- **Preparación visual**: Pequeña compresión antes del salto
+
+### Mobile Optimizations
+- **Touch handling**: Mejor gestión de eventos táctiles
+- **Responsive values**: Fuerzas ajustadas para móviles
+- **Cancel protection**: Manejo de touch cancel y mouse leave
+- **Performance**: Optimizaciones para dispositivos de menor potencia
+
 ## [1.2.0] - 2025-06-07
 
 ### Added - Diseño Pi Network
