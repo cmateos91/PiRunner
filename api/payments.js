@@ -56,7 +56,7 @@ export default async function handler(req, res) {
   });
 
   try {
-    const { action, paymentId, txid } = req.body;
+    const { action, paymentId, txid, userInfo } = req.body;
 
     if (!action || !paymentId) {
       return res.status(400).json({
@@ -97,7 +97,7 @@ export default async function handler(req, res) {
             // Even if cancelled, try to save score if transaction was verified
             if (paymentStatus.status.transaction_verified && paymentStatus.transaction?.txid) {
               console.log('Transaction was verified, saving score anyway...');
-              await saveScoreToLeaderboard(paymentStatus);
+              await saveScoreToLeaderboard(paymentStatus, userInfo);
               
               return res.status(200).json({
                 success: true,
@@ -130,7 +130,7 @@ export default async function handler(req, res) {
         result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid });
 
         // Guardar score en leaderboard después de completar pago
-        await saveScoreToLeaderboard(result);
+        await saveScoreToLeaderboard(result, userInfo);
 
         return res.status(200).json({
           success: true,
@@ -166,7 +166,7 @@ export default async function handler(req, res) {
 }
 
 // Save score to leaderboard after successful payment
-async function saveScoreToLeaderboard(payment) {
+async function saveScoreToLeaderboard(payment, userInfo = null) {
   try {
     console.log('=== SAVING SCORE TO LEADERBOARD ===');
     console.log('Payment data:', JSON.stringify(payment, null, 2));
@@ -182,12 +182,12 @@ async function saveScoreToLeaderboard(payment) {
 
     console.log('Score data to save:', scoreData);
 
-    // Get user info
-    const userInfo = await getUserInfo(payment.user_uid);
-    console.log('User info:', userInfo);
+    // Use provided userInfo or get from getUserInfo function
+    const finalUserInfo = userInfo || await getUserInfo(payment.user_uid);
+    console.log('User info:', finalUserInfo);
 
     // Llamada directa a la función de leaderboard (interna)
-    await saveScoreDirectly(payment, userInfo);
+    await saveScoreDirectly(payment, finalUserInfo);
     console.log('Score saved to leaderboard successfully via direct call');
     
   } catch (error) {
@@ -205,7 +205,7 @@ async function saveScoreDirectly(paymentData, userInfo) {
       id: generateScoreId(),
       paymentId: paymentData.identifier,
       userUid: paymentData.user_uid,
-      username: userInfo.username,
+      username: userInfo.username ? `@${userInfo.username}` : `user_${paymentData.user_uid.substr(-8)}`,
       score: paymentData.metadata?.score || 0,
       coins: paymentData.metadata?.coins || 0,
       timestamp: new Date().toISOString(),

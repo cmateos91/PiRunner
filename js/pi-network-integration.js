@@ -169,7 +169,11 @@ class PiNetworkManager {
                 body: JSON.stringify({
                     action: action,
                     paymentId: paymentId,
-                    txid: txid
+                    txid: txid,
+                    userInfo: this.user ? {
+                        username: this.user.username,
+                        uid: this.user.uid
+                    } : null
                 })
             });
 
