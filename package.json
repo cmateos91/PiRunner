@@ -5,13 +5,10 @@
   "main": "index.html",
   "scripts": {
     "dev": "serve . -p 3000",
-    "build": "echo 'No build process needed for static site'",
+    "build": "echo 'Static site ready'",
     "start": "serve ."
   },
   "keywords": ["pi-network", "game", "blockchain", "runner"],
   "author": "Tu nombre",
-  "license": "MIT",
-  "devDependencies": {
-    "serve": "^14.0.0"
-  }
+  "license": "MIT"
 }
