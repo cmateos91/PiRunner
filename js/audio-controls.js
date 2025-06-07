@@ -10,14 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Usar event delegation para mejor rendimiento
         muteButton.addEventListener('click', handleMuteClick);
         
-        // Inicializar audio después de primer click en cualquier parte
-        document.addEventListener('click', initializeAudioOnFirstClick, { once: true });
-        document.addEventListener('touchstart', initializeAudioOnFirstClick, { once: true });
+        // NO inicializar audio aquí - lo hace Game.js tras interacción en canvas
+        console.log('🎵 Controles de audio listos');
         
         // Escuchar cambios de idioma para actualizar el botón
         window.addEventListener('languageChanged', () => {
             if (window.game && window.game.audioManager) {
-                updateMuteButtonVisual(window.game.audioManager.isMuted());
+                updateMuteButtonVisual(window.game.audioManager.getMutedState());
             }
         });
     }
@@ -68,16 +67,6 @@ function updateMuteButtonVisual(isMuted) {
         // Cambiar color para mejor feedback visual
         muteButton.style.opacity = isMuted ? '0.6' : '1.0';
     }
-}
-
-// Inicializar audio de forma diferida tras primer gesto
-function initializeAudioOnFirstClick() {
-    setTimeout(() => {
-        if (window.game && window.game.audioManager) {
-            window.game.audioManager.initializeAfterUserGesture();
-            console.log('Audio inicializado tras primer gesto del usuario');
-        }
-    }, 100);
 }
 
 // Exponer función global para uso desde otros scripts

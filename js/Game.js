@@ -3,17 +3,28 @@ class PiRunner {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // Delta time para animaciones fluidas
+        this.lastTime = 0;
+        this.deltaTime = 0;
+        this.targetFPS = 60;
+        this.frameInterval = 1000 / this.targetFPS;
+        this.accumulator = 0;
+        
         // Configurar canvas responsivo
         this.setupCanvas();
         
         // Estado del juego
-        this.gameState = 'playing'; // 'playing', 'exploding', 'gameOver'
+        this.gameState = 'playing';
         this.score = 0;
         this.coins = 0;
-        this.speed = this.isMobile() ? 2.5 : 3;
+        this.baseSpeed = this.isMobile() ? 2.5 : 3;
+        this.speed = this.baseSpeed;
         this.frameCount = 0;
         this.explosionTimer = 0;
-        this.explosionDuration = 3000; // 3 segundos para ver la explosión
+        this.explosionDuration = 3000;
+        
+        // Limpieza de recursos al cerrar
+        this.cleanup = [];
         
         // Instancias de clases
         this.player = new Player(this.width, this.height, this.isMobile());
@@ -27,7 +38,11 @@ class PiRunner {
         
         this.setupResize();
         this.initializeAudio();
-        this.gameLoop();
+        
+        // Iniciar el game loop
+        this.startGameLoop();
+        
+        console.log('🎮 Pi Runner inicializado con delta time');
     }
     
     setupCanvas() {
@@ -39,8 +54,8 @@ class PiRunner {
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         
-        // Configurar para pantallas de alta densidad, pero limitado en Pi Browser
-        const dpr = window.IS_PI_BROWSER ? 1 : (window.devicePixelRatio || 1);
+        // DPR limitado para Pi Browser
+        const dpr = window.isPiBrowser ? 1 : Math.min(window.devicePixelRatio || 1, 2);
         if (dpr > 1) {
             this.canvas.width = rect.width * dpr;
             this.canvas.height = rect.height * dpr;
@@ -49,49 +64,63 @@ class PiRunner {
             this.ctx.scale(dpr, dpr);
         }
         
-        console.log(`🎮 Canvas configurado: ${this.width}x${this.height}, DPR: ${dpr}`);
+        console.log(`🎮 Canvas: ${this.width}x${this.height}, DPR: ${dpr}`);
     }
     
     setupResize() {
         let resizeTimeout;
-        window.addEventListener('resize', () => {
+        const resizeHandler = () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 this.setupCanvas();
                 this.updateAllDimensions();
             }, 100);
-        });
+        };
+        
+        window.addEventListener('resize', resizeHandler);
+        this.cleanup.push(() => window.removeEventListener('resize', resizeHandler));
     }
     
     updateAllDimensions() {
         const isMobile = this.isMobile();
         this.player.updatePosition(this.width, this.height, isMobile);
-        this.renderer.updateDimensions(this.width, this.height, isMobile);
+        if (this.renderer.updateDimensions) {
+            this.renderer.updateDimensions(this.width, this.height, isMobile);
+        }
     }
     
     initializeAudio() {
-        // Inicialización súper simple sin async/await
-        try {
-            const initAudio = () => {
+        // Inicializar audio SOLO tras el primer click/touch REAL en el canvas
+        const initAudioOnCanvasInteraction = (event) => {
+            // Solo procesar si es un evento real del usuario
+            if (event.isTrusted) {
+                console.log('🎵 Inicializando audio tras interacción real del usuario');
+                
                 try {
-                    this.audioManager.initializeAfterUserGesture();
+                    this.audioManager.initializeAfterUserGesture().then(() => {
+                        console.log('🎵 Audio completamente inicializado');
+                    }).catch(error => {
+                        console.warn('⚠️ Error en inicialización diferida:', error);
+                    });
                 } catch (error) {
                     console.warn('Error inicializando audio:', error);
                 }
                 
-                // Remover listeners
-                document.removeEventListener('click', initAudio);
-                document.removeEventListener('touchstart', initAudio);
-                document.removeEventListener('keydown', initAudio);
-            };
-            
-            // Escuchar primera interacción
-            document.addEventListener('click', initAudio);
-            document.addEventListener('touchstart', initAudio);
-            document.addEventListener('keydown', initAudio);
-        } catch (error) {
-            console.warn('Error configurando audio:', error);
-        }
+                // Remover listeners tras primera inicialización exitosa
+                this.canvas.removeEventListener('click', initAudioOnCanvasInteraction);
+                this.canvas.removeEventListener('touchstart', initAudioOnCanvasInteraction);
+            }
+        };
+        
+        // Agregar listeners SOLO al canvas para asegurar interacción real
+        this.canvas.addEventListener('click', initAudioOnCanvasInteraction, { once: true });
+        this.canvas.addEventListener('touchstart', initAudioOnCanvasInteraction, { once: true });
+        
+        // Agregar cleanup
+        this.cleanup.push(() => {
+            this.canvas.removeEventListener('click', initAudioOnCanvasInteraction);
+            this.canvas.removeEventListener('touchstart', initAudioOnCanvasInteraction);
+        });
     }
     
     isMobile() {
@@ -109,24 +138,19 @@ class PiRunner {
             const jumpResult = this.player.executeJump();
             
             if (jumpResult) {
-                // Crear efecto de partículas basado en el tipo de salto
                 if (jumpResult.isPerfect) {
-                    // Supersalto - efectos especiales
                     this.particleSystem.createSuperJumpEffect(
                         this.player.x + this.player.width/2,
                         this.player.y + this.player.height
                     );
                     
-                    // Efecto de onda de choque
                     this.particleSystem.createShockwave(
                         this.player.x + this.player.width/2,
                         this.player.y + this.player.height
                     );
                     
-                    // Reproducir sonido de super salto
                     this.audioManager.playSuperJumpSound();
                 } else {
-                    // Salto normal con intensidad variable
                     this.particleSystem.createJumpEffect(
                         this.player.x + this.player.width/2,
                         this.player.y + this.player.height,
@@ -143,30 +167,25 @@ class PiRunner {
         }
     }
     
-    // Método legacy para compatibilidad
-    handleJump() {
-        this.handleJumpStart();
-        this.handleJumpEnd();
-    }
-    
-    update() {
-        // Siempre actualizar efectos visuales
-        this.particleSystem.update();
-        this.coinFragmentSystem.update();
+    update(deltaTime) {
+        // Siempre actualizar efectos visuales con delta time
+        this.particleSystem.update(deltaTime);
+        this.coinFragmentSystem.update(deltaTime);
         
         if (this.gameState === 'playing') {
             this.frameCount++;
             this.score++;
             
-            // Actualizar jugador
-            this.player.update();
+            // Actualizar jugador con delta time
+            this.player.update(deltaTime);
             
             // Generar elementos
             this.spawnElements();
             
-            // Actualizar elementos
-            this.obstacleManager.update(this.speed);
-            this.coinManager.update(this.speed);
+            // Actualizar elementos con velocidad escalada por delta time
+            const scaledSpeed = this.speed * (deltaTime / 16.67); // Normalizar a 60fps
+            this.obstacleManager.update(scaledSpeed);
+            this.coinManager.update(scaledSpeed);
             
             // Verificar colisiones
             this.checkCollisions();
@@ -174,51 +193,50 @@ class PiRunner {
             // Actualizar dificultad
             this.updateDifficulty();
             
-            // Actualizar UI
-            GameUI.updateScore(this.score);
-            GameUI.updateCoins(this.coins);
+            // Actualizar UI (menos frecuente)
+            if (this.frameCount % 3 === 0) {
+                GameUI.updateScore(this.score);
+                GameUI.updateCoins(this.coins);
+            }
             
         } else if (this.gameState === 'exploding') {
-            // Durante la explosión, solo continuar el movimiento de obstáculos y monedas
-            this.obstacleManager.update(this.speed * 0.3); // Velocidad reducida
-            this.coinManager.update(this.speed * 0.3);
+            const scaledSpeed = this.speed * 0.3 * (deltaTime / 16.67);
+            this.obstacleManager.update(scaledSpeed);
+            this.coinManager.update(scaledSpeed);
             
-            // Actualizar timer de explosión
-            this.explosionTimer += 16; // Aproximadamente 60fps
+            this.explosionTimer += deltaTime;
             
-            // Cambiar a game over después del tiempo de explosión
             if (this.explosionTimer >= this.explosionDuration) {
                 this.showGameOverScreen();
             }
         }
-        // En estado 'gameOver' no actualizar nada del juego
     }
     
     spawnElements() {
-        // Generar obstáculos (reducida frecuencia para apreciar mejor los nuevos enemigos)
-        const baseObstacleFreq = this.isMobile() ? 240 : 200;
-        const obstacleFrequency = Math.max(120, baseObstacleFreq - Math.floor(this.frameCount / 600) * 15);
+        // Frecuencia ajustada y más estable
+        const baseObstacleFreq = this.isMobile() ? 300 : 250;
+        const obstacleFrequency = Math.max(150, baseObstacleFreq - Math.floor(this.frameCount / 800) * 20);
         if (this.frameCount % obstacleFrequency === 0) {
             this.obstacleManager.spawn(this.frameCount);
         }
         
-        // Generar monedas
-        const baseCoinFreq = this.isMobile() ? 150 : 120;
-        const coinFrequency = Math.max(80, baseCoinFreq - Math.floor(this.frameCount / 900) * 15);
+        const baseCoinFreq = this.isMobile() ? 180 : 150;
+        const coinFrequency = Math.max(100, baseCoinFreq - Math.floor(this.frameCount / 1000) * 20);
         if (this.frameCount % coinFrequency === 0) {
             this.coinManager.spawn(this.frameCount);
         }
     }
     
     updateDifficulty() {
-        const difficultyInterval = this.isMobile() ? 400 : 300;
+        // Incremento más gradual de dificultad
+        const difficultyInterval = this.isMobile() ? 600 : 500;
         if (this.frameCount % difficultyInterval === 0) {
-            this.speed += this.isMobile() ? 0.2 : 0.3;
+            this.speed += this.isMobile() ? 0.15 : 0.2;
+            this.speed = Math.min(this.speed, this.baseSpeed * 3); // Límite máximo
         }
     }
     
     checkCollisions() {
-        // Solo verificar colisiones si el juego está activo
         if (this.gameState !== 'playing') return;
         
         // Colisiones con obstáculos
@@ -230,10 +248,7 @@ class PiRunner {
         // Colisiones con monedas
         const collectedCoins = this.coinManager.checkCollision(this.player);
         if (collectedCoins > 0) {
-            // Reproducir sonido de recolección
             this.audioManager.playCoinCollectSound();
-            
-            // Crear efecto de partículas por cada moneda recolectada
             this.particleSystem.createCoinCollectEffect(
                 this.player.x + this.player.width/2,
                 this.player.y + this.player.height/2
@@ -251,12 +266,11 @@ class PiRunner {
         this.obstacleManager.render(this.ctx);
         this.coinManager.render(this.ctx);
         
-        // Solo renderizar el jugador si está jugando
         if (this.gameState === 'playing') {
             this.player.render(this.ctx);
         }
         
-        // Siempre renderizar efectos
+        // Efectos visuales
         this.particleSystem.render(this.ctx);
         this.coinFragmentSystem.render(this.ctx);
     }
@@ -265,20 +279,15 @@ class PiRunner {
         this.gameState = 'exploding';
         this.explosionTimer = 0;
         
-        // Parar música de fondo inmediatamente
         this.audioManager.stopBackgroundMusic();
-        
-        // Reproducir sonido de explosión
         this.audioManager.playExplosionSound();
         
-        // Crear explosión de fragmentos de moneda
         this.coinFragmentSystem.createExplosion(
             this.player.x,
             this.player.y,
             this.player.width
         );
         
-        // Agregar efectos visuales adicionales
         GameUI.addDisintegrationEffect();
     }
     
@@ -287,16 +296,11 @@ class PiRunner {
         GameUI.showGameOver(this.score, this.coins);
     }
     
-    gameOver() {
-        // Método deprecated - usar startExplosion() en su lugar
-        this.startExplosion();
-    }
-    
     restart() {
         this.gameState = 'playing';
         this.score = 0;
         this.coins = 0;
-        this.speed = this.isMobile() ? 2.5 : 3;
+        this.speed = this.baseSpeed;
         this.frameCount = 0;
         this.explosionTimer = 0;
         
@@ -307,22 +311,82 @@ class PiRunner {
         this.coinFragmentSystem.clear();
         this.inputHandler.reset();
         
-        // Reiniciar música de fondo si no está muteado
-        if (!this.audioManager.isMuted) {
+        if (!this.audioManager.getMutedState()) {
             this.audioManager.playBackgroundMusic();
         }
         
         GameUI.hideGameOver();
     }
     
-    gameLoop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.gameLoop());
+    // Game loop optimizado con delta time
+    startGameLoop() {
+        const gameLoop = (currentTime) => {
+            // Calcular delta time
+            if (this.lastTime === 0) {
+                this.lastTime = currentTime;
+            }
+            
+            this.deltaTime = currentTime - this.lastTime;
+            this.lastTime = currentTime;
+            
+            // Limitar delta time para evitar saltos grandes
+            this.deltaTime = Math.min(this.deltaTime, 50); // Máximo 50ms
+            
+            // Acumulador para frame rate independiente
+            this.accumulator += this.deltaTime;
+            
+            // Update con steps fijos
+            while (this.accumulator >= this.frameInterval) {
+                this.update(this.frameInterval);
+                this.accumulator -= this.frameInterval;
+            }
+            
+            // Render siempre
+            this.render();
+            
+            // Continuar loop
+            requestAnimationFrame(gameLoop);
+        };
+        
+        // Iniciar el loop
+        requestAnimationFrame(gameLoop);
+    }
+    
+    // Cleanup de recursos
+    destroy() {
+        console.log('🧹 Limpiando recursos del juego...');
+        
+        // Ejecutar todas las funciones de cleanup
+        this.cleanup.forEach(cleanupFn => {
+            try {
+                cleanupFn();
+            } catch (error) {
+                console.warn('Error en cleanup:', error);
+            }
+        });
+        
+        // Limpiar audio
+        if (this.audioManager && typeof this.audioManager.destroy === 'function') {
+            this.audioManager.destroy();
+        }
+        
+        // Limpiar sistemas
+        if (this.particleSystem) this.particleSystem.clear();
+        if (this.coinFragmentSystem) this.coinFragmentSystem.clear();
+        
+        console.log('✅ Limpieza completada');
     }
 }
 
 // Inicializar juego
 const game = new PiRunner();
-// Hacer game accesible globalmente para controles de audio
 window.game = game;
+
+// Cleanup al cerrar la página
+window.addEventListener('beforeunload', () => {
+    if (game && typeof game.destroy === 'function') {
+        game.destroy();
+    }
+});
+
+console.log('🎮 Pi Runner inicializado con optimizaciones de rendimiento');

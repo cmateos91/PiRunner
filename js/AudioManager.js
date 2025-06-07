@@ -1,133 +1,140 @@
-// AudioManager optimizado para Pi Browser - Baja latencia
+// AudioManager optimizado con Web Audio API y pooling
 class AudioManager {
     constructor() {
-        console.log('🎵 AudioManager Pi Browser optimizado iniciado');
         this.isMuted = localStorage.getItem('piRunnerMuted') === 'true';
         this.isInitialized = false;
-        this.sounds = {};
-        this.audioPool = {}; // Pool de audio para reutilización
-        this.preloadedSounds = {};
-        this.maxPoolSize = 3; // Máximo 3 instancias por sonido
         
-        // Detectar Pi Browser
-        this.isPiBrowser = this.detectPiBrowser();
+        // Web Audio API context (se crea SOLO tras gesto del usuario)
+        this.audioContext = null;
+        this.audioBuffers = {};
+        this.sourcePool = {};
+        this.backgroundMusic = null;
         
-        // Configuración específica para Pi Browser
-        this.audioConfig = {
-            volume: this.isPiBrowser ? 0.4 : 0.3,
-            preloadStrategy: this.isPiBrowser ? 'aggressive' : 'lazy',
-            poolSize: this.isPiBrowser ? 2 : 1,
-            useWebAudio: this.isPiBrowser && this.supportsWebAudio()
+        // Configuración de sonidos
+        this.soundConfig = {
+            'coin': { src: 'sounds/coin_collect.wav', poolSize: 3 },
+            'explosion': { src: 'sounds/explosion.wav', poolSize: 2 },
+            'jump': { src: 'sounds/super_jump.wav', poolSize: 3 },
+            'music': { src: 'sounds/background_music.mp3', poolSize: 1 }
         };
         
-        this.initializeAudioContext();
-        console.log(`🎵 AudioManager configurado para ${this.isPiBrowser ? 'Pi Browser' : 'navegador estándar'}`);
+        // Estado de precarga
+        this.loadingPromises = {};
+        this.isPreloading = false;
+        
+        console.log('🎵 AudioManager inicializado (Web Audio API)');
     }
     
-    detectPiBrowser() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        return userAgent.includes('pibrowser') || 
-               userAgent.includes('pi browser') ||
-               (userAgent.includes('mobile') && userAgent.includes('webkit') && 
-                window.location.hostname.includes('minepi'));
-    }
-    
-    supportsWebAudio() {
-        return !!(window.AudioContext || window.webkitAudioContext);
-    }
-    
-    initializeAudioContext() {
-        if (this.audioConfig.useWebAudio) {
-            try {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                this.buffers = {};
-                console.log('🎵 Web Audio API inicializado');
-            } catch (error) {
-                console.warn('⚠️ Web Audio API no disponible, usando HTML Audio');
-                this.audioConfig.useWebAudio = false;
-            }
-        }
-    }
-    
-    async preloadSound(type, src) {
-        if (this.audioConfig.useWebAudio) {
-            return this.preloadWebAudioSound(type, src);
-        } else {
-            return this.preloadHTMLAudioSound(type, src);
-        }
-    }
-    
-    async preloadWebAudioSound(type, src) {
+    async initializeAfterUserGesture() {
+        if (this.isInitialized) return;
+        
+        console.log('🎵 Inicializando audio tras gesto del usuario...');
+        
         try {
-            const response = await fetch(src);
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-            this.buffers[type] = audioBuffer;
-            console.log(`🎵 Sonido Web Audio preloaded: ${type}`);
-            return true;
+            // Crear AudioContext SOLO aquí, tras gesto del usuario
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('🎵 AudioContext creado:', this.audioContext.state);
+            }
+            
+            // Forzar activación del contexto con método más agresivo
+            if (this.audioContext.state !== 'running') {
+                console.log('🎵 Intentando activar AudioContext...');
+                
+                // Crear un buffer silencioso y reproducirlo para activar el contexto
+                const buffer = this.audioContext.createBuffer(1, 1, 22050);
+                const source = this.audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(this.audioContext.destination);
+                source.start(0);
+                
+                // Intentar resumir
+                if (this.audioContext.resume) {
+                    await this.audioContext.resume();
+                }
+                
+                console.log('🎵 Estado del AudioContext después de activación:', this.audioContext.state);
+            }
+            
+            // Solo proceder si el contexto está corriendo
+            if (this.audioContext.state === 'running') {
+                // Precargar todos los sonidos
+                await this.preloadAllSounds();
+                
+                this.isInitialized = true;
+                
+                // Iniciar música de fondo si no está muteado
+                if (!this.isMuted) {
+                    this.playBackgroundMusic();
+                }
+                
+                console.log('✅ AudioManager inicializado completamente');
+            } else {
+                console.warn('⚠️ AudioContext no se pudo activar, usando fallback');
+                this.initializeFallback();
+            }
+            
         } catch (error) {
-            console.warn(`⚠️ Error preloading Web Audio ${type}:`, error);
-            return false;
+            console.warn('⚠️ Error inicializando Web Audio API:', error);
+            // Fallback a HTML Audio si falla Web Audio API
+            this.initializeFallback();
         }
     }
     
-    async preloadHTMLAudioSound(type, src) {
-        return new Promise((resolve) => {
-            // Crear pool de audio
-            this.audioPool[type] = [];
-            
-            for (let i = 0; i < this.audioConfig.poolSize; i++) {
-                const audio = new Audio();
-                audio.volume = this.audioConfig.volume;
-                audio.preload = 'auto';
-                audio.src = src;
-                
-                // Configuración específica para Pi Browser
-                if (this.isPiBrowser) {
-                    audio.setAttribute('playsinline', true);
-                    audio.setAttribute('webkit-playsinline', true);
-                }
-                
-                // Precargar agresivamente en Pi Browser
-                if (this.audioConfig.preloadStrategy === 'aggressive') {
-                    audio.load();
-                }
-                
-                this.audioPool[type].push({
-                    audio: audio,
-                    playing: false,
-                    lastUsed: 0
-                });
-            }
-            
-            console.log(`🎵 Pool HTML Audio creado para ${type}: ${this.audioConfig.poolSize} instancias`);
-            resolve(true);
-        });
-    }
-    
-    async initializeSounds() {
-        const soundConfig = {
-            'coin': 'sounds/coin_collect.wav',
-            'explosion': 'sounds/explosion.wav', 
-            'jump': 'sounds/super_jump.wav',
-            'music': 'sounds/background_music.mp3'
-        };
+    async preloadAllSounds() {
+        this.isPreloading = true;
+        const loadPromises = [];
         
-        console.log('🎵 Inicializando sonidos...');
-        
-        for (const [type, src] of Object.entries(soundConfig)) {
-            try {
-                await this.preloadSound(type, src);
-            } catch (error) {
-                console.warn(`⚠️ Error preloading ${type}:`, error);
+        for (const [soundType, config] of Object.entries(this.soundConfig)) {
+            if (soundType !== 'music') { // Música se maneja por separado
+                loadPromises.push(this.loadSound(soundType, config.src));
             }
         }
         
-        console.log('🎵 Sonidos inicializados');
+        try {
+            await Promise.all(loadPromises);
+            console.log('🎵 Todos los sonidos precargados');
+        } catch (error) {
+            console.warn('⚠️ Error precargando sonidos:', error);
+        }
+        
+        this.isPreloading = false;
     }
     
-    playWebAudioSound(type) {
-        if (!this.audioContext || !this.buffers[type]) return;
+    async loadSound(soundType, src) {
+        if (this.loadingPromises[soundType]) {
+            return this.loadingPromises[soundType];
+        }
+        
+        this.loadingPromises[soundType] = this.fetchAndDecodeAudio(src);
+        
+        try {
+            const buffer = await this.loadingPromises[soundType];
+            this.audioBuffers[soundType] = buffer;
+            console.log(`🎵 Sonido cargado: ${soundType}`);
+            return buffer;
+        } catch (error) {
+            console.warn(`⚠️ Error cargando ${soundType}:`, error);
+            delete this.loadingPromises[soundType];
+            throw error;
+        }
+    }
+    
+    async fetchAndDecodeAudio(src) {
+        const response = await fetch(src);
+        const arrayBuffer = await response.arrayBuffer();
+        return await this.audioContext.decodeAudioData(arrayBuffer);
+    }
+    
+    // Reproducir sonido con Web Audio API (sin latencia)
+    playSound(soundType) {
+        if (this.isMuted || !this.isInitialized || !this.audioContext) return;
+        
+        const buffer = this.audioBuffers[soundType];
+        if (!buffer) {
+            console.warn(`⚠️ Buffer no disponible para: ${soundType}`);
+            return;
+        }
         
         try {
             // Resumir contexto si está suspendido
@@ -135,73 +142,46 @@ class AudioManager {
                 this.audioContext.resume();
             }
             
+            // Crear nuevo source (no reutilizable)
             const source = this.audioContext.createBufferSource();
             const gainNode = this.audioContext.createGain();
             
-            source.buffer = this.buffers[type];
-            gainNode.gain.value = this.audioConfig.volume;
+            source.buffer = buffer;
             
+            // Configurar volumen según tipo de sonido
+            switch (soundType) {
+                case 'coin':
+                    gainNode.gain.value = 0.3;
+                    break;
+                case 'explosion':
+                    gainNode.gain.value = 0.4;
+                    break;
+                case 'jump':
+                    gainNode.gain.value = 0.2;
+                    break;
+                default:
+                    gainNode.gain.value = 0.3;
+            }
+            
+            // Conectar nodos
             source.connect(gainNode);
             gainNode.connect(this.audioContext.destination);
             
+            // Reproducir
             source.start(0);
             
-        } catch (error) {
-            console.warn(`⚠️ Error playing Web Audio ${type}:`, error);
-        }
-    }
-    
-    playHTMLAudioSound(type) {
-        if (!this.audioPool[type]) return;
-        
-        // Encontrar audio disponible en el pool
-        const pool = this.audioPool[type];
-        let availableAudio = null;
-        
-        for (const audioObj of pool) {
-            if (!audioObj.playing || audioObj.audio.ended) {
-                availableAudio = audioObj;
-                break;
-            }
-        }
-        
-        // Si no hay audio disponible, usar el menos usado recientemente
-        if (!availableAudio) {
-            availableAudio = pool.reduce((oldest, current) => 
-                current.lastUsed < oldest.lastUsed ? current : oldest
-            );
-        }
-        
-        try {
-            const audio = availableAudio.audio;
-            
-            // Resetear y reproducir
-            audio.currentTime = 0;
-            availableAudio.playing = true;
-            availableAudio.lastUsed = Date.now();
-            
-            const playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        // Reproducción exitosa
-                    })
-                    .catch(() => {
-                        availableAudio.playing = false;
-                    });
-            }
-            
-            // Marcar como no reproduciendo cuando termine
-            audio.onended = () => {
-                availableAudio.playing = false;
+            // Auto cleanup cuando termine
+            source.onended = () => {
+                source.disconnect();
+                gainNode.disconnect();
             };
             
         } catch (error) {
-            availableAudio.playing = false;
+            console.warn(`⚠️ Error reproduciendo ${soundType}:`, error);
         }
     }
     
+    // Métodos específicos de sonidos
     playCoinCollectSound() {
         this.playSound('coin');
     }
@@ -214,16 +194,7 @@ class AudioManager {
         this.playSound('jump');
     }
     
-    playSound(type) {
-        if (this.isMuted || !this.isInitialized) return;
-        
-        if (this.audioConfig.useWebAudio) {
-            this.playWebAudioSound(type);
-        } else {
-            this.playHTMLAudioSound(type);
-        }
-    }
-    
+    // Música de fondo (manejo separado)
     playBackgroundMusic() {
         if (this.isMuted) return;
         
@@ -231,18 +202,18 @@ class AudioManager {
             if (!this.backgroundMusic) {
                 this.backgroundMusic = new Audio('sounds/background_music.mp3');
                 this.backgroundMusic.loop = true;
-                this.backgroundMusic.volume = this.isPiBrowser ? 0.15 : 0.1;
-                
-                if (this.isPiBrowser) {
-                    this.backgroundMusic.setAttribute('playsinline', true);
-                    this.backgroundMusic.setAttribute('webkit-playsinline', true);
-                }
+                this.backgroundMusic.volume = 0.1;
+                this.backgroundMusic.preload = 'auto';
             }
             
             this.backgroundMusic.currentTime = 0;
-            this.backgroundMusic.play().catch(() => {
-                // Ignorar errores de autoplay
-            });
+            const playPromise = this.backgroundMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.warn('⚠️ Error reproduciendo música:', error);
+                });
+            }
             
         } catch (error) {
             console.warn('⚠️ Error con música de fondo:', error);
@@ -250,13 +221,9 @@ class AudioManager {
     }
     
     stopBackgroundMusic() {
-        try {
-            if (this.backgroundMusic) {
-                this.backgroundMusic.pause();
-                this.backgroundMusic.currentTime = 0;
-            }
-        } catch (error) {
-            // Ignorar errores
+        if (this.backgroundMusic) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
         }
     }
     
@@ -273,58 +240,71 @@ class AudioManager {
         return this.isMuted;
     }
     
-    async initializeAfterUserGesture() {
-        console.log('🎵 Inicializando audio tras gesto del usuario...');
-        
-        // Resumir contexto de Web Audio si está suspendido
-        if (this.audioContext && this.audioContext.state === 'suspended') {
-            try {
-                await this.audioContext.resume();
-                console.log('🎵 AudioContext resumido');
-            } catch (error) {
-                console.warn('⚠️ Error resumiendo AudioContext:', error);
-            }
-        }
-        
-        // Inicializar sonidos si no se han inicializado
-        if (!this.isInitialized) {
-            await this.initializeSounds();
-            this.isInitialized = true;
-        }
-        
-        // Reproducir música de fondo si no está silenciado
-        if (!this.isMuted) {
-            setTimeout(() => {
-                this.playBackgroundMusic();
-            }, 100); // Pequeño delay para asegurar que el contexto esté listo
-        }
-        
-        console.log('🎵 AudioManager completamente inicializado');
-    }
-    
-    // Método para obtener estado actual
-    isMuted() {
+    getMutedState() {
         return this.isMuted;
     }
     
-    // Método para limpiar recursos
-    dispose() {
-        this.stopBackgroundMusic();
+    // Fallback para navegadores sin Web Audio API
+    initializeFallback() {
+        console.log('🎵 Usando HTML Audio fallback');
+        this.isInitialized = true;
         
-        if (this.audioContext) {
-            this.audioContext.close();
-        }
-        
-        // Limpiar pools de audio
-        for (const pool of Object.values(this.audioPool)) {
-            for (const audioObj of pool) {
-                audioObj.audio.src = '';
-                audioObj.audio.load();
+        // Implementación básica con HTML Audio
+        this.playSound = (soundType) => {
+            if (this.isMuted) return;
+            
+            try {
+                const audio = new Audio();
+                const config = this.soundConfig[soundType];
+                if (config) {
+                    audio.src = config.src;
+                    audio.volume = 0.3;
+                    audio.play().catch(() => {});
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error en fallback para ${soundType}:`, error);
             }
-        }
+        };
         
-        console.log('🎵 AudioManager disposed');
+        if (!this.isMuted) {
+            this.playBackgroundMusic();
+        }
+    }
+    
+    // Cleanup de recursos
+    destroy() {
+        console.log('🧹 Limpiando AudioManager...');
+        
+        try {
+            // Parar música
+            this.stopBackgroundMusic();
+            
+            // Cerrar AudioContext
+            if (this.audioContext && this.audioContext.state !== 'closed') {
+                this.audioContext.close();
+            }
+            
+            // Limpiar referencias
+            this.audioBuffers = {};
+            this.sourcePool = {};
+            this.backgroundMusic = null;
+            this.isInitialized = false;
+            
+        } catch (error) {
+            console.warn('⚠️ Error en cleanup de audio:', error);
+        }
+    }
+    
+    // Método para verificar estado
+    getStatus() {
+        return {
+            isInitialized: this.isInitialized,
+            isMuted: this.isMuted,
+            contextState: this.audioContext ? this.audioContext.state : 'none',
+            buffersLoaded: Object.keys(this.audioBuffers).length,
+            isPreloading: this.isPreloading
+        };
     }
 }
 
-console.log('🎵 AudioManager Pi Browser optimizado cargado');
+console.log('🎵 AudioManager optimizado cargado');

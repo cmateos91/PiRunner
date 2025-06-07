@@ -99,29 +99,8 @@ if (isPiBrowser) {
     
     // Optimizar para reproducción de audio rápida
     window.addEventListener('load', () => {
-        // Crear contexto de audio lo antes posible
-        if (window.AudioContext || window.webkitAudioContext) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                window.globalAudioContext = audioContext;
-                
-                // Forzar inicio del contexto
-                const resumeAudio = () => {
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                    document.removeEventListener('touchstart', resumeAudio);
-                    document.removeEventListener('click', resumeAudio);
-                };
-                
-                document.addEventListener('touchstart', resumeAudio, { once: true });
-                document.addEventListener('click', resumeAudio, { once: true });
-                
-                console.log('🔧 AudioContext global creado para Pi Browser');
-            } catch (error) {
-                console.warn('⚠️ Error creando AudioContext:', error);
-            }
-        }
+        // NO crear AudioContext aquí - lo hace AudioManager tras gesto del usuario
+        console.log('🔧 Configuración de audio lista para Pi Browser');
     });
 }
 
