@@ -20,7 +20,12 @@ class PiNetworkManager {
             });
             
             this.isInitialized = true;
-            console.log(`✅ Pi Network SDK inicializado (${isMainnet ? 'Mainnet' : 'Testnet'}) - sandbox: ${!isMainnet}`);
+            const mode = isMainnet ? 'Mainnet' : 'Testnet';
+            console.log(`✅ Pi Network SDK inicializado (${mode}) - sandbox: ${!isMainnet}`);
+            
+            // Mostrar modo en pantalla para debug
+            this.showModeIndicator(mode);
+            
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
@@ -31,11 +36,26 @@ class PiNetworkManager {
     // Detectar si es mainnet environment
     isMainnetEnvironment() {
         const hostname = window.location.hostname.toLowerCase();
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Forzar modo con parámetros URL
+        const forceTestnet = urlParams.get('testnet') === 'true' || urlParams.get('sandbox') === 'true';
+        const forceMainnet = urlParams.get('mainnet') === 'true';
+        
+        if (forceTestnet) {
+            console.log(`🔍 URL Parameter: FORCED TESTNET MODE`);
+            return false; // Testnet
+        }
+        
+        if (forceMainnet) {
+            console.log(`🔍 URL Parameter: FORCED MAINNET MODE`);
+            return true; // Mainnet
+        }
         
         // SOLO mainnet si es el dominio personalizado runnerpi.xyz
         const isMainnetDomain = hostname === 'www.runnerpi.xyz' || hostname === 'runnerpi.xyz';
         
-        // TODO lo demás es testnet (incluyendo vercel.app y localhost)
+        // Todo lo demás es testnet (incluyendo vercel.app y localhost)
         const isTestnetDomain = hostname.includes('vercel.app') || hostname === 'localhost' || hostname === '127.0.0.1';
         
         console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'Mainnet' : 'Testnet'}`);
@@ -244,6 +264,35 @@ class PiNetworkManager {
         if (this.isAuthenticated && this.user) {
             console.log(`✅ Usuario conectado: ${this.user.username}`);
         }
+    }
+
+    // Mostrar indicador de modo en pantalla
+    showModeIndicator(mode) {
+        const indicator = document.createElement('div');
+        indicator.id = 'pi-mode-indicator';
+        indicator.textContent = `Pi ${mode}`;
+        indicator.style.cssText = `
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: ${mode === 'Mainnet' ? '#10B981' : '#F59E0B'};
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+        `;
+        
+        document.body.appendChild(indicator);
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+            if (document.getElementById('pi-mode-indicator')) {
+                document.body.removeChild(indicator);
+            }
+        }, 10000);
     }
 
     // Método para verificar si Pi Network está disponible
