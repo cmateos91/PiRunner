@@ -9,6 +9,12 @@ class PiNetworkManager {
 
     async initialize() {
         try {
+            // VERIFICAR SI PI SDK ESTÁ DISPONIBLE
+            if (!this.isPiSDKAvailable()) {
+                this.showPiBrowserRequired();
+                return false;
+            }
+
             // Detectar entorno correctamente
             const isMainnet = this.isMainnetEnvironment();
             
@@ -29,8 +35,125 @@ class PiNetworkManager {
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
+            
+            // Si falla, mostrar mensaje específico para URL no registrada
+            if (this.isPiSDKAvailable() && error.message) {
+                this.showURLNotRegistered();
+            } else {
+                this.showPiBrowserRequired();
+            }
             return false;
         }
+    }
+
+    // Verificar si Pi SDK está disponible
+    isPiSDKAvailable() {
+        return typeof window.Pi !== 'undefined' && window.Pi;
+    }
+
+    // Mostrar mensaje cuando Pi SDK no está disponible
+    showPiBrowserRequired() {
+        const message = document.createElement('div');
+        message.id = 'pi-browser-required';
+        message.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 99999;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+                box-sizing: border-box;
+            ">
+                <h1>🥧 Pi Browser Required</h1>
+                <p style="font-size: 18px; margin: 20px 0;">
+                    Esta aplicación necesita ejecutarse en Pi Browser para acceder a Pi Network.
+                </p>
+                <div style="margin: 20px 0;">
+                    <p><strong>Opciones:</strong></p>
+                    <p>📱 Abrir en Pi Browser</p>
+                    <p>🔧 O usar el sandbox: <a href="https://sandbox.minepi.com/app/runnerpi-c7e8a5e13a8e9885" style="color: #ffd700;">sandbox.minepi.com</a></p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: #ffd700;
+                    color: black;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                ">Continuar sin Pi Network</button>
+            </div>
+        `;
+        document.body.appendChild(message);
+    }
+
+    // Mostrar mensaje cuando URL no está registrada en Developer Portal
+    showURLNotRegistered() {
+        const message = document.createElement('div');
+        message.id = 'url-not-registered';
+        message.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 99999;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+                box-sizing: border-box;
+            ">
+                <h1>🔐 URL No Registrada</h1>
+                <p style="font-size: 18px; margin: 20px 0;">
+                    Esta URL no está registrada en Pi Developer Portal.
+                </p>
+                <div style="margin: 20px 0;">
+                    <p><strong>URL actual:</strong> ${window.location.href}</p>
+                    <p><strong>Solución:</strong> Registrar esta URL en develop.pi</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <p>🔧 <strong>Usar sandbox mientras tanto:</strong></p>
+                    <a href="https://sandbox.minepi.com/app/runnerpi-c7e8a5e13a8e9885" style="
+                        color: #ffd700;
+                        text-decoration: none;
+                        background: rgba(255, 215, 0, 0.2);
+                        padding: 8px 16px;
+                        border-radius: 4px;
+                        display: inline-block;
+                        margin: 10px;
+                    ">Abrir en Sandbox</a>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: #ffd700;
+                    color: black;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                ">Continuar sin Pi Network</button>
+            </div>
+        `;
+        document.body.appendChild(message);
     }
 
     // Detectar si es mainnet environment
