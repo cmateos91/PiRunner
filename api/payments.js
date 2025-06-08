@@ -5,18 +5,23 @@ import KVStorage from '../lib/KVStorage.js';
 import LeaderboardService from '../lib/LeaderboardService.js';
 
 const PI_API_KEY = process.env.PI_API_KEY;
+const PI_API_KEY_TESTNET = process.env.PI_API_KEY_TESTNET;
 const PI_NETWORK_MODE = process.env.PI_NETWORK_MODE || 'mainnet';
-const PI_API_BASE = PI_NETWORK_MODE === 'testnet' 
-  ? 'https://api.minepi.com/v2'  // Testnet también usa misma API
-  : 'https://api.minepi.com/v2'; // Mainnet API
 
-// Validar configuración crítica
-if (!PI_API_KEY) {
-  console.error('❌ PI_API_KEY no configurada');
-  throw new Error('PI_API_KEY es requerida para mainnet');
+// Detectar environment por URL
+function getEnvironmentFromRequest(req) {
+  const host = req.headers.host || '';
+  const isMainnet = host.includes('runnerpi.xyz');
+  const isTestnet = host.includes('vercel.app');
+  
+  return {
+    isMainnet,
+    isTestnet,
+    apiKey: isMainnet ? PI_API_KEY : PI_API_KEY_TESTNET || PI_API_KEY
+  };
 }
 
-console.log(`🔧 Pi API configured for ${PI_NETWORK_MODE} mode`);
+const PI_API_BASE = 'https://api.minepi.com/v2';
 
 // CORS headers for frontend requests
 const corsHeaders = {
@@ -26,12 +31,12 @@ const corsHeaders = {
 };
 
 // Helper function to make Pi API requests
-async function piApiRequest(endpoint, method = 'GET', body = null) {
+async function piApiRequest(endpoint, method = 'GET', body = null, apiKey = PI_API_KEY) {
   try {
     const options = {
       method,
       headers: {
-        'Authorization': `Key ${PI_API_KEY}`,
+        'Authorization': `Key ${apiKey}`,
         'Content-Type': 'application/json',
       },
     };
@@ -69,6 +74,9 @@ export default async function handler(req, res) {
 
   try {
     const { action, paymentId, txid, userInfo } = req.body;
+    const env = getEnvironmentFromRequest(req);
+    
+    console.log(`🔧 Processing ${action} for ${env.isMainnet ? 'Mainnet' : 'Testnet'}`);
 
     if (!action || !paymentId) {
       return res.status(400).json({
@@ -81,7 +89,7 @@ export default async function handler(req, res) {
     switch (action) {
       case 'approve':
         console.log(`Approving payment: ${paymentId}`);
-        result = await piApiRequest(`/payments/${paymentId}/approve`, 'POST');
+        result = await piApiRequest(`/payments/${paymentId}/approve`, 'POST', null, env.apiKey);
         
         return res.status(200).json({
           success: true,
@@ -100,7 +108,7 @@ export default async function handler(req, res) {
         
         // First, check payment status before trying to complete
         try {
-          const paymentStatus = await piApiRequest(`/payments/${paymentId}`, 'GET');
+          const paymentStatus = await piApiRequest(`/payments/${paymentId}`, 'GET', null, env.apiKey);
           console.log('Payment status before completion:', paymentStatus.status);
           
           if (paymentStatus.status.cancelled) {
@@ -139,7 +147,7 @@ export default async function handler(req, res) {
         }
 
         // Attempt to complete the payment
-        result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid });
+        result = await piApiRequest(`/payments/${paymentId}/complete`, 'POST', { txid }, env.apiKey);
 
         // Guardar score en leaderboard después de completar pago
         const saveResult = await saveScoreToLeaderboard(result, userInfo);
@@ -153,7 +161,7 @@ export default async function handler(req, res) {
 
       case 'cancel':
         console.log(`Cancelling payment: ${paymentId}`);
-        result = await piApiRequest(`/payments/${paymentId}/cancel`, 'POST');
+        result = await piApiRequest(`/payments/${paymentId}/cancel`, 'POST', null, env.apiKey);
 
         return res.status(200).json({
           success: true,

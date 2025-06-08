@@ -30,17 +30,15 @@ class PiNetworkManager {
     isMainnetEnvironment() {
         const hostname = window.location.hostname.toLowerCase();
         
-        // Mainnet si:
-        // 1. Dominio personalizado (no localhost, no vercel.app)
-        // 2. Variables de entorno específicas
-        // 3. No está en sandbox explícito
+        // Mainnet SOLO si es el dominio personalizado
+        const isMainnetDomain = hostname === 'www.runnerpi.xyz' || hostname === 'runnerpi.xyz';
         
-        const isLocalDev = hostname === 'localhost' || hostname === '127.0.0.1';
-        const isVercelPreview = hostname.includes('vercel.app');
-        const isPiNetDomain = hostname.includes('pinet.com');
+        // Testnet si es vercel.app
+        const isTestnetDomain = hostname.includes('vercel.app');
         
-        // Mainnet solo si es dominio personalizado o PiNet
-        return !isLocalDev && !isVercelPreview || isPiNetDomain;
+        console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'Mainnet' : 'Testnet'}`);
+        
+        return isMainnetDomain;
     }
 
     async authenticate() {
@@ -155,7 +153,11 @@ class PiNetworkManager {
 
     async callBackendAPI(action, paymentId, txid = null) {
         try {
+            // Usar URL actual del navegador (permite ambos environments)
             const baseUrl = window.location.origin;
+                
+            console.log(`🔗 Calling backend API: ${baseUrl}/api/payments (${this.isMainnetEnvironment() ? 'Mainnet' : 'Testnet'})`);
+            
             const response = await fetch(`${baseUrl}/api/payments`, {
                 method: 'POST',
                 headers: {
