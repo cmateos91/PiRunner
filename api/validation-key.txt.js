@@ -1,0 +1,5 @@
+// Simular validation-key.txt como endpoint
+export default function handler(req, res) {
+  res.setHeader('Content-Type', 'text/plain');
+  res.status(200).send('eaec0411ee44fc993c3a0308e91893512f418c9429dd84e45650896102c2caa7b3ca72971347f5f5ca83ccad915835d4a1cd810cea8541cc9cf543e876bd8f7c');
+}
