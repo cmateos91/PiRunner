@@ -1,20 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/validation-key.txt",
-      "destination": "/public/validation-key.txt"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/validation-key.txt",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        }
-      ]
-    }
-  ]
+  "version": 2
 }
