@@ -19,11 +19,14 @@ function getEnvironmentFromRequest(req, body = {}) {
     console.log(`🔍 Frontend environment info: ${mode} (${url})`);
     
     const forceTestnet = url.includes('testnet=true') || url.includes('sandbox=true') || !isMainnet;
+    const selectedApiKey = (!isMainnet || forceTestnet) ? PI_API_KEY_TESTNET || PI_API_KEY : PI_API_KEY;
+    
+    console.log(`🔑 API Key selection: ${forceTestnet ? 'TESTNET' : 'MAINNET'} (${selectedApiKey ? 'Key present' : 'Key missing'})`);
     
     return {
       isMainnet: isMainnet && !forceTestnet,
       isTestnet: !isMainnet || forceTestnet,
-      apiKey: (!isMainnet || forceTestnet) ? PI_API_KEY_TESTNET || PI_API_KEY : PI_API_KEY,
+      apiKey: selectedApiKey,
       mode: forceTestnet ? 'Testnet (frontend)' : isMainnet ? 'Mainnet (frontend)' : 'Testnet (frontend)'
     };
   }
