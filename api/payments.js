@@ -13,13 +13,39 @@ function getEnvironmentFromRequest(req, body = {}) {
   const host = req.headers.host || '';
   const referer = req.headers.referer || '';
   
+  console.log(`🔍 Backend environment detection:`);
+  console.log(`   - Host: ${host}`);
+  console.log(`   - Referer: ${referer}`);
+  
+  // FORZAR: Si host contiene vercel.app, SIEMPRE usar testnet
+  if (host.includes('vercel.app')) {
+    console.log(`🎯 FORCED TESTNET: vercel.app detected in host`);
+    return {
+      isMainnet: false,
+      isTestnet: true,
+      apiKey: PI_API_KEY_TESTNET || PI_API_KEY,
+      mode: 'Testnet (vercel.app forced)'
+    };
+  }
+  
   // Priorizar información del frontend
   if (body.environment) {
     const { isMainnet, mode, url } = body.environment;
     console.log(`🔍 Frontend environment info: ${mode} (${url})`);
     
+    // FORZAR: Si URL contiene vercel.app, SIEMPRE usar testnet
+    if (url.includes('vercel.app')) {
+      console.log(`🎯 FORCED TESTNET: vercel.app detected in frontend URL`);
+      return {
+        isMainnet: false,
+        isTestnet: true,
+        apiKey: PI_API_KEY_TESTNET || PI_API_KEY,
+        mode: 'Testnet (vercel.app in URL)'
+      };
+    }
+    
     // CLAVE: usar testnet key para vercel.app y sandbox
-    const shouldUseTestnet = !isMainnet || url.includes('testnet=true') || url.includes('sandbox=true') || url.includes('vercel.app');
+    const shouldUseTestnet = !isMainnet || url.includes('testnet=true') || url.includes('sandbox=true');
     const selectedApiKey = shouldUseTestnet ? (PI_API_KEY_TESTNET || PI_API_KEY) : PI_API_KEY;
     
     console.log(`🔑 API Key selection: ${shouldUseTestnet ? 'TESTNET' : 'MAINNET'} (${selectedApiKey ? 'Key present' : 'Key missing'})`);
@@ -120,7 +146,14 @@ export default async function handler(req, res) {
     const { action, paymentId, txid, userInfo, environment } = req.body;
     const env = getEnvironmentFromRequest(req, req.body);
     
-    console.log(`🔧 Processing ${action} for ${env.mode} (API: ${env.apiKey ? 'configured' : 'missing'})`);
+    console.log(`🔧 Processing ${action} for ${env.mode}`);
+    console.log(`🔑 API Key being used: ${env.apiKey ? `${env.apiKey.substring(0, 10)}...` : 'MISSING'}`);
+    console.log(`🌐 Environment details:`, {
+      host: req.headers.host,
+      isMainnet: env.isMainnet,
+      isTestnet: env.isTestnet,
+      mode: env.mode
+    });
 
     if (!action || !paymentId) {
       return res.status(400).json({

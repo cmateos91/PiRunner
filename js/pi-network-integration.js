@@ -156,7 +156,15 @@ class PiNetworkManager {
     // Detectar si es mainnet environment
     isMainnetEnvironment() {
         const hostname = window.location.hostname.toLowerCase();
+        const fullUrl = window.location.href;
         const urlParams = new URLSearchParams(window.location.search);
+        
+        // DEBUG: Mostrar información detallada
+        console.log(`🔍 DEBUGGING ENVIRONMENT DETECTION:`);
+        console.log(`   - Hostname: ${hostname}`);
+        console.log(`   - Full URL: ${fullUrl}`);
+        console.log(`   - Contains vercel.app: ${hostname.includes('vercel.app')}`);
+        console.log(`   - Contains runnerpi.xyz: ${hostname.includes('runnerpi.xyz')}`);
         
         // Forzar modo con parámetros URL
         const forceTestnet = urlParams.get('testnet') === 'true' || urlParams.get('sandbox') === 'true';
@@ -172,11 +180,14 @@ class PiNetworkManager {
             return true;
         }
         
-        // DOMINIO PRINCIPAL: runnerpi.xyz = MAINNET
-        // TODO LO DEMÁS: testnet (vercel.app, localhost, etc)
+        // LÓGICA PRINCIPAL: runnerpi.xyz = MAINNET, todo lo demás = TESTNET
         const isMainnetDomain = hostname === 'runnerpi.xyz' || hostname === 'www.runnerpi.xyz';
+        const isTestnetDomain = hostname.includes('vercel.app') || hostname === 'localhost' || hostname === '127.0.0.1';
         
-        console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'MAINNET' : 'TESTNET'}`);
+        console.log(`🔍 Domain detection results:`);
+        console.log(`   - isMainnetDomain: ${isMainnetDomain}`);
+        console.log(`   - isTestnetDomain: ${isTestnetDomain}`);
+        console.log(`   - Final decision: ${isMainnetDomain ? 'MAINNET' : 'TESTNET'}`);
         
         return isMainnetDomain;
     }
