@@ -175,12 +175,11 @@ class PiNetworkManager {
             return true;
         }
         
-        // IMPORTANTE: Por ahora TODO es testnet excepto runnerpi.xyz
-        // vercel.app siempre es testnet, no mainnet
+        // DOMINIO PRINCIPAL: runnerpi.xyz = MAINNET
+        // TODO LO DEMÁS: testnet (vercel.app, localhost, etc)
         const isMainnetDomain = hostname === 'runnerpi.xyz' || hostname === 'www.runnerpi.xyz';
         
-        // TODO LO DEMÁS ES TESTNET (incluye vercel.app, localhost, etc)
-        console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'Mainnet' : 'Testnet'}`);
+        console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'MAINNET' : 'TESTNET'}`);
         
         return isMainnetDomain;
     }
