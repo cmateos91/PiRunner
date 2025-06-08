@@ -10,15 +10,17 @@ class PiNetworkManager {
     async initialize() {
         try {
             // Detectar entorno correctamente
-            const isProduction = this.isMainnetEnvironment();
+            const isMainnet = this.isMainnetEnvironment();
             
+            // Para testnet usamos sandbox: true
+            // Para mainnet usamos sandbox: false
             await Pi.init({ 
                 version: "2.0",
-                sandbox: !isProduction // true solo para desarrollo/testnet
+                sandbox: !isMainnet // sandbox: true para testnet, false para mainnet
             });
             
             this.isInitialized = true;
-            console.log(`✅ Pi Network SDK inicializado (${isProduction ? 'Mainnet' : 'Testnet/Sandbox'})`);
+            console.log(`✅ Pi Network SDK inicializado (${isMainnet ? 'Mainnet' : 'Testnet'}) - sandbox: ${!isMainnet}`);
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
@@ -30,11 +32,11 @@ class PiNetworkManager {
     isMainnetEnvironment() {
         const hostname = window.location.hostname.toLowerCase();
         
-        // Mainnet SOLO si es el dominio personalizado
+        // SOLO mainnet si es el dominio personalizado runnerpi.xyz
         const isMainnetDomain = hostname === 'www.runnerpi.xyz' || hostname === 'runnerpi.xyz';
         
-        // Testnet si es vercel.app
-        const isTestnetDomain = hostname.includes('vercel.app');
+        // TODO lo demás es testnet (incluyendo vercel.app y localhost)
+        const isTestnetDomain = hostname.includes('vercel.app') || hostname === 'localhost' || hostname === '127.0.0.1';
         
         console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'Mainnet' : 'Testnet'}`);
         
