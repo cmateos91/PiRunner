@@ -29,9 +29,6 @@ class PiNetworkManager {
             const mode = isMainnet ? 'Mainnet' : 'Testnet';
             console.log(`✅ Pi Network SDK inicializado (${mode}) - sandbox: ${!isMainnet}`);
             
-            // Mostrar modo en pantalla para debug
-            this.showModeIndicator(mode);
-            
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
@@ -396,35 +393,6 @@ class PiNetworkManager {
         if (this.isAuthenticated && this.user) {
             console.log(`✅ Usuario conectado: ${this.user.username}`);
         }
-    }
-
-    // Mostrar indicador de modo en pantalla
-    showModeIndicator(mode) {
-        const indicator = document.createElement('div');
-        indicator.id = 'pi-mode-indicator';
-        indicator.textContent = `Pi ${mode}`;
-        indicator.style.cssText = `
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: ${mode === 'Mainnet' ? '#10B981' : '#F59E0B'};
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 10000;
-            font-family: Arial, sans-serif;
-        `;
-        
-        document.body.appendChild(indicator);
-        
-        // Auto-remove after 10 seconds
-        setTimeout(() => {
-            if (document.getElementById('pi-mode-indicator')) {
-                document.body.removeChild(indicator);
-            }
-        }, 10000);
     }
 
     // Método para verificar si Pi Network está disponible
