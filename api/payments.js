@@ -5,7 +5,18 @@ import KVStorage from '../lib/KVStorage.js';
 import LeaderboardService from '../lib/LeaderboardService.js';
 
 const PI_API_KEY = process.env.PI_API_KEY;
-const PI_API_BASE = 'https://api.minepi.com/v2';
+const PI_NETWORK_MODE = process.env.PI_NETWORK_MODE || 'mainnet';
+const PI_API_BASE = PI_NETWORK_MODE === 'testnet' 
+  ? 'https://api.minepi.com/v2'  // Testnet también usa misma API
+  : 'https://api.minepi.com/v2'; // Mainnet API
+
+// Validar configuración crítica
+if (!PI_API_KEY) {
+  console.error('❌ PI_API_KEY no configurada');
+  throw new Error('PI_API_KEY es requerida para mainnet');
+}
+
+console.log(`🔧 Pi API configured for ${PI_NETWORK_MODE} mode`);
 
 // CORS headers for frontend requests
 const corsHeaders = {

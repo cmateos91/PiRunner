@@ -9,21 +9,38 @@ class PiNetworkManager {
 
     async initialize() {
         try {
-            const isProduction = window.location.hostname !== 'localhost' && 
-                                 !window.location.hostname.includes('vercel.app');
+            // Detectar entorno correctamente
+            const isProduction = this.isMainnetEnvironment();
             
             await Pi.init({ 
                 version: "2.0",
-                sandbox: false
+                sandbox: !isProduction // true solo para desarrollo/testnet
             });
             
             this.isInitialized = true;
-            console.log(`✅ Pi Network SDK inicializado (${!isProduction ? 'Sandbox' : 'Production'})`);
+            console.log(`✅ Pi Network SDK inicializado (${isProduction ? 'Mainnet' : 'Testnet/Sandbox'})`);
             return true;
         } catch (error) {
             console.error('Error inicializando Pi Network SDK:', error);
             return false;
         }
+    }
+
+    // Detectar si es mainnet environment
+    isMainnetEnvironment() {
+        const hostname = window.location.hostname.toLowerCase();
+        
+        // Mainnet si:
+        // 1. Dominio personalizado (no localhost, no vercel.app)
+        // 2. Variables de entorno específicas
+        // 3. No está en sandbox explícito
+        
+        const isLocalDev = hostname === 'localhost' || hostname === '127.0.0.1';
+        const isVercelPreview = hostname.includes('vercel.app');
+        const isPiNetDomain = hostname.includes('pinet.com');
+        
+        // Mainnet solo si es dominio personalizado o PiNet
+        return !isLocalDev && !isVercelPreview || isPiNetDomain;
     }
 
     async authenticate() {

@@ -16,7 +16,7 @@ Un endless runner optimizado para Pi Network con integración completa de Pi SDK
 - **Pi SDK 2.0** completamente integrado
 - **Pagos en Pi** para guardar puntuaciones
 - **Autenticación** de usuarios Pi Network
-- **Sandbox/Mainnet** automático según entorno
+- **Mainnet ready** - configurado para producción
 - **Gestión de pagos incompletos**
 
 ### **Funcionalidades sociales**
@@ -36,71 +36,59 @@ Un endless runner optimizado para Pi Network con integración completa de Pi SDK
 
 - **Frontend**: Vanilla JavaScript, HTML5 Canvas, CSS3
 - **Backend**: Node.js, Express, Vercel Functions
-- **Base de datos**: Vercel KV (Redis)
+- **Base de datos**: Vercel Blob Storage
 - **Pagos**: Pi Network SDK
 - **Deploy**: Vercel
 
-## 🚀 Instalación
+## 🚀 Setup Production
 
-### **Requisitos**
-- Node.js 16+
-- Cuenta Vercel
-- Cuenta Pi Network Developer
-
-### **Setup local**
-```bash
-git clone <repository>
-cd PiRunner
-npm install
-cp .env.example .env
-# Configurar variables de entorno
-npm run dev
-```
-
-### **Variables de entorno**
+### **Variables de entorno requeridas**
 ```env
-PI_API_KEY=your_pi_api_key
-KV_REST_API_URL=your_vercel_kv_url
-KV_REST_API_TOKEN=your_vercel_kv_token
-APP_WALLET=your_stellar_wallet_address
+PI_API_KEY=your_mainnet_pi_api_key
+PI_WALLET_ADDRESS=your_mainnet_stellar_wallet
+PI_NETWORK_MODE=mainnet
+NODE_ENV=production
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
 ```
 
-## 📱 Deploy a Production
-
-### **Vercel Deploy**
+### **Deploy a mainnet**
 ```bash
 vercel --prod
 ```
 
-### **Pi Network App Registration**
-1. Registrar app en Pi Developer Portal
-2. Configurar dominios permitidos
-3. Actualizar APP_WALLET en variables de entorno
-4. Cambiar a mainnet en pi-network-integration.js
+## 📱 Pi Network Configuration
 
-## 🎯 Estructura del proyecto,
+### **Pi Developer Portal Setup**
+1. Registrar app con **App Network: Pi Mainnet**
+2. Configurar **Production URL**: `https://runnerpi.xyz`
+3. Configurar **App Wallet** para mainnet
+4. Generar **Server API Key** para mainnet
+5. Verificar dominio ownership
+
+### **App Config**
+- **App Name**: Pi Runner
+- **App Categories**: Games, Entertainment
+- **Allowed Domains**: runnerpi.xyz
+
+## 🎯 Estructura del proyecto
 
 ```
 PiRunner/
 ├── index.html              # Página principal
-├── css/                    # Estilos
-│   ├── variables.css       # Variables CSS
-│   ├── base.css           # Estilos base
-│   ├── ui.css             # Interfaz de usuario
-│   └── ...
-├── js/                     # JavaScript
+├── css/                    # Estilos optimizados
+├── js/                     # JavaScript core
 │   ├── Game.js            # Motor del juego
 │   ├── Player.js          # Lógica del jugador
-│   ├── InputHandler.js    # Manejo de input
-│   ├── pi-network-integration.js # Pi Network
+│   ├── pi-network-integration.js # Pi Network SDK
 │   └── ...
 ├── api/                    # Backend APIs
-│   ├── payments.js        # Procesamiento de pagos
+│   ├── payments.js        # Procesamiento de pagos Pi
 │   ├── leaderboard.js     # Sistema de rankings
-│   └── ...
+│   └── recover-payments.js # Recuperación de pagos
+├── lib/                    # Utilidades backend
 ├── translations/           # Archivos de idiomas
 ├── sounds/                # Audio assets
-└── lib/                   # Utilidades backend
+└── schema/                # Validaciones
 ```
 
 ## 🎮 Cómo jugar
@@ -109,7 +97,7 @@ PiRunner/
 2. **Salto de carga**: Mantén presionado para saltar más alto
 3. **Recolecta Pi Coins**: Toca las monedas para sumar puntos
 4. **Evita obstáculos**: Esquiva las operaciones matemáticas
-5. **Guarda tu puntuación**: Usa Pi Network para el leaderboard
+5. **Guarda tu puntuación**: Usa Pi Network para el leaderboard global
 
 ## 🌍 Idiomas soportados
 
@@ -129,43 +117,19 @@ PiRunner/
 ```javascript
 // Procesar pagos Pi Network
 {
-  "action": "approve|complete",
+  "action": "approve|complete|cancel",
   "paymentId": "payment_id",
   "txid": "transaction_id" // solo para complete
 }
 ```
 
-## 🔧 Configuración Pi Network
-
-### **Mainnet Setup**
+### **POST /api/recover-payments**
 ```javascript
-// pi-network-integration.js
-const isProduction = true; // Cambiar a true para mainnet
-await Pi.init({ 
-    version: "2.0",
-    sandbox: false // false para mainnet
-});
+// Recuperar pagos incompletos
+{
+  "userUid": "user_uid"
+}
 ```
-
-### **App Config**
-- **App Name**: Pi Runner
-- **App Categories**: Games, Entertainment
-- **Allowed Domains**: tu-dominio.vercel.app
-
-## 🎯 Performance
-
-### **Optimizaciones implementadas**
-- **Canvas rendering** optimizado
-- **Audio lazy loading** para móviles
-- **Particle system** eficiente
-- **Event delegation** para mejor performance
-- **Bundle optimizado** sin librerías innecesarias
-
-### **Métricas objetivo**
-- **FPS**: 60fps en dispositivos modernos
-- **Load time**: <2s primera carga
-- **Memory usage**: <50MB en Pi Browser
-- **Battery impact**: Minimizado
 
 ## 🛡️ Seguridad
 
@@ -175,32 +139,70 @@ await Pi.init({
 - **CORS** configurado correctamente
 - **Environment variables** para secretos
 
-## 📈 Analytics & Monitoring
+## 🎯 Performance
 
-- **Error tracking** en producción
-- **Performance monitoring** integrado
-- **User behavior** analytics ready
+### **Optimizaciones implementadas**
+- **Canvas rendering** optimizado para 60fps
+- **Audio lazy loading** para móviles
+- **Particle system** eficiente
+- **Event delegation** para mejor performance
+- **Bundle optimizado** sin dependencias innecesarias
+
+### **Métricas objetivo**
+- **FPS**: 60fps en dispositivos modernos
+- **Load time**: <2s primera carga
+- **Memory usage**: <50MB en Pi Browser
+- **Battery impact**: Minimizado
+
+## 🏆 Features Pi Network
+
+### **Pagos integrados**
+- **User-to-App payments** para guardar scores
+- **Server-side approval** y completion
+- **Gestión de errores** y pagos incompletos
+- **Leaderboard verificado** con blockchain
+
+### **Autenticación**
+- **Pi Network login** nativo
+- **Username display** en leaderboards
+- **Scopes**: username, payments
+- **Token validation** en backend
+
+## 📈 Analytics Ready
+
 - **Payment success** tracking
+- **User behavior** analytics ready
+- **Performance monitoring** integrado
+- **Error tracking** en producción
 
-## 🤝 Contribuir
+## 🌐 Deployment
 
-1. Fork del proyecto
-2. Crear feature branch
-3. Commit cambios
-4. Push a branch
-5. Crear Pull Request
+### **Production URL**
+- **Mainnet**: https://runnerpi.xyz
+- **Pi Network**: Registrado en Developer Portal
+- **SSL**: Configurado automáticamente
+- **CDN**: Vercel Edge Network
+
+### **Environment**
+- **Node.js**: 18+ 
+- **Vercel**: Serverless functions
+- **Pi SDK**: v2.0
+- **Blob Storage**: Persistent leaderboards
 
 ## 📄 Licencia
 
-[Especificar licencia]
+[Ver LICENSE file]
 
 ## 🎊 Créditos
 
 Desarrollado para la comunidad Pi Network con ❤️
 
+Optimizado para **Pi Browser** y **Pi Mainnet** - ¡Listo para jugar y ganar Pi! 🥧
+
 ---
 
-**🚀 Listo para mainnet Pi Network** 🚀
+**🚀 MAINNET READY - Pi Network Production Game 🚀**
 
-Para soporte: [tu-email]
-Pi Network: [tu-usuario-pi]
+**Sitio**: https://runnerpi.xyz  
+**Pi Network**: Mainnet App  
+**Soporte**: [GitHub Issues]
