@@ -177,8 +177,10 @@ class PiNetworkManager {
         try {
             // Usar URL actual del navegador (permite ambos environments)
             const baseUrl = window.location.origin;
+            const isMainnet = this.isMainnetEnvironment();
+            const mode = isMainnet ? 'Mainnet' : 'Testnet';
                 
-            console.log(`🔗 Calling backend API: ${baseUrl}/api/payments (${this.isMainnetEnvironment() ? 'Mainnet' : 'Testnet'})`);
+            console.log(`🔗 Calling backend API: ${baseUrl}/api/payments (${mode})`);
             
             const response = await fetch(`${baseUrl}/api/payments`, {
                 method: 'POST',
@@ -189,6 +191,11 @@ class PiNetworkManager {
                     action: action,
                     paymentId: paymentId,
                     txid: txid,
+                    environment: {
+                        isMainnet: isMainnet,
+                        mode: mode,
+                        url: window.location.href // Incluir URL completa con parámetros
+                    },
                     userInfo: this.user ? {
                         username: this.user.username,
                         uid: this.user.uid

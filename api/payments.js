@@ -8,16 +8,57 @@ const PI_API_KEY = process.env.PI_API_KEY;
 const PI_API_KEY_TESTNET = process.env.PI_API_KEY_TESTNET;
 const PI_NETWORK_MODE = process.env.PI_NETWORK_MODE || 'mainnet';
 
-// Detectar environment por URL
-function getEnvironmentFromRequest(req) {
+// Detectar environment por URL y información del frontend
+function getEnvironmentFromRequest(req, body = {}) {
   const host = req.headers.host || '';
+  const referer = req.headers.referer || '';
+  
+  // Priorizar información del frontend
+  if (body.environment) {
+    const { isMainnet, mode, url } = body.environment;
+    console.log(`🔍 Frontend environment info: ${mode} (${url})`);
+    
+    const forceTestnet = url.includes('testnet=true') || url.includes('sandbox=true') || !isMainnet;
+    
+    return {
+      isMainnet: isMainnet && !forceTestnet,
+      isTestnet: !isMainnet || forceTestnet,
+      apiKey: (!isMainnet || forceTestnet) ? PI_API_KEY_TESTNET || PI_API_KEY : PI_API_KEY,
+      mode: forceTestnet ? 'Testnet (frontend)' : isMainnet ? 'Mainnet (frontend)' : 'Testnet (frontend)'
+    };
+  }
+  
+  // Fallback: detección por headers
+  const forceTestnet = referer.includes('testnet=true') || referer.includes('sandbox=true');
+  const forceMainnet = referer.includes('mainnet=true');
+  
+  if (forceTestnet) {
+    return {
+      isMainnet: false,
+      isTestnet: true,
+      apiKey: PI_API_KEY_TESTNET || PI_API_KEY,
+      mode: 'Testnet (URL param)'
+    };
+  }
+  
+  if (forceMainnet) {
+    return {
+      isMainnet: true,
+      isTestnet: false,
+      apiKey: PI_API_KEY,
+      mode: 'Mainnet (URL param)'
+    };
+  }
+  
+  // Detección por dominio
   const isMainnet = host.includes('runnerpi.xyz');
   const isTestnet = host.includes('vercel.app');
   
   return {
     isMainnet,
     isTestnet,
-    apiKey: isMainnet ? PI_API_KEY : PI_API_KEY_TESTNET || PI_API_KEY
+    apiKey: isMainnet ? PI_API_KEY : PI_API_KEY_TESTNET || PI_API_KEY,
+    mode: isMainnet ? 'Mainnet (domain)' : 'Testnet (domain)'
   };
 }
 
@@ -73,10 +114,10 @@ export default async function handler(req, res) {
   });
 
   try {
-    const { action, paymentId, txid, userInfo } = req.body;
-    const env = getEnvironmentFromRequest(req);
+    const { action, paymentId, txid, userInfo, environment } = req.body;
+    const env = getEnvironmentFromRequest(req, req.body);
     
-    console.log(`🔧 Processing ${action} for ${env.isMainnet ? 'Mainnet' : 'Testnet'}`);
+    console.log(`🔧 Processing ${action} for ${env.mode} (API: ${env.apiKey ? 'configured' : 'missing'})`);
 
     if (!action || !paymentId) {
       return res.status(400).json({
