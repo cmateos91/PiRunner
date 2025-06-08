@@ -1,12 +1,5 @@
 {
   "version": 2,
-  "redirects": [
-    {
-      "source": "https://www.runnerpi.xyz/(.*)",
-      "destination": "https://runnerpi.xyz/$1",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/validation-key.txt",
