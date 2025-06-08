@@ -1,10 +1,6 @@
 {
   "version": 2,
-  "name": "pi-runner-mainnet",
   "public": true,
-  "trailingSlash": false,
-  "cleanUrls": false,
-  "outputDirectory": ".",
   "env": {
     "NODE_ENV": "production",
     "PI_NETWORK_MODE": "mainnet"
@@ -16,31 +12,8 @@
         {
           "key": "X-Frame-Options",
           "value": "ALLOWALL"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
         }
       ]
-    },
-    {
-      "source": "/**/*.txt",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/validation-key.txt",
-      "destination": "/public/validation-key.txt"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
     }
   ]
 }
