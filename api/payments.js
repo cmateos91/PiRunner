@@ -18,29 +18,30 @@ function getEnvironmentFromRequest(req, body = {}) {
     const { isMainnet, mode, url } = body.environment;
     console.log(`🔍 Frontend environment info: ${mode} (${url})`);
     
-    const forceTestnet = url.includes('testnet=true') || url.includes('sandbox=true') || !isMainnet;
-    const selectedApiKey = (!isMainnet || forceTestnet) ? PI_API_KEY_TESTNET || PI_API_KEY : PI_API_KEY;
+    // CLAVE: usar testnet key para vercel.app y sandbox
+    const shouldUseTestnet = !isMainnet || url.includes('testnet=true') || url.includes('sandbox=true') || url.includes('vercel.app');
+    const selectedApiKey = shouldUseTestnet ? (PI_API_KEY_TESTNET || PI_API_KEY) : PI_API_KEY;
     
-    console.log(`🔑 API Key selection: ${forceTestnet ? 'TESTNET' : 'MAINNET'} (${selectedApiKey ? 'Key present' : 'Key missing'})`);
+    console.log(`🔑 API Key selection: ${shouldUseTestnet ? 'TESTNET' : 'MAINNET'} (${selectedApiKey ? 'Key present' : 'Key missing'})`);
     
     return {
-      isMainnet: isMainnet && !forceTestnet,
-      isTestnet: !isMainnet || forceTestnet,
+      isMainnet: isMainnet && !shouldUseTestnet,
+      isTestnet: shouldUseTestnet,
       apiKey: selectedApiKey,
-      mode: forceTestnet ? 'Testnet (frontend)' : isMainnet ? 'Mainnet (frontend)' : 'Testnet (frontend)'
+      mode: shouldUseTestnet ? 'Testnet (auto)' : 'Mainnet'
     };
   }
   
   // Fallback: detección por headers
-  const forceTestnet = referer.includes('testnet=true') || referer.includes('sandbox=true');
-  const forceMainnet = referer.includes('mainnet=true');
+  const forceTestnet = referer.includes('testnet=true') || referer.includes('sandbox=true') || referer.includes('vercel.app');
+  const forceMainnet = referer.includes('mainnet=true') && !referer.includes('vercel.app');
   
   if (forceTestnet) {
     return {
       isMainnet: false,
       isTestnet: true,
       apiKey: PI_API_KEY_TESTNET || PI_API_KEY,
-      mode: 'Testnet (URL param)'
+      mode: 'Testnet (URL detection)'
     };
   }
   
@@ -53,14 +54,13 @@ function getEnvironmentFromRequest(req, body = {}) {
     };
   }
   
-  // Detección por dominio
+  // Por defecto: vercel.app es testnet, runnerpi.xyz es mainnet
   const isMainnet = host.includes('runnerpi.xyz');
-  const isTestnet = host.includes('vercel.app');
   
   return {
     isMainnet,
-    isTestnet,
-    apiKey: isMainnet ? PI_API_KEY : PI_API_KEY_TESTNET || PI_API_KEY,
+    isTestnet: !isMainnet,
+    apiKey: isMainnet ? PI_API_KEY : (PI_API_KEY_TESTNET || PI_API_KEY),
     mode: isMainnet ? 'Mainnet (domain)' : 'Testnet (domain)'
   };
 }

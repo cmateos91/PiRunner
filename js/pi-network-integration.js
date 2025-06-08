@@ -44,20 +44,19 @@ class PiNetworkManager {
         
         if (forceTestnet) {
             console.log(`🔍 URL Parameter: FORCED TESTNET MODE`);
-            return false; // Testnet
+            return false;
         }
         
         if (forceMainnet) {
             console.log(`🔍 URL Parameter: FORCED MAINNET MODE`);
-            return true; // Mainnet
+            return true;
         }
         
-        // SOLO mainnet si es el dominio personalizado runnerpi.xyz
-        const isMainnetDomain = hostname === 'www.runnerpi.xyz' || hostname === 'runnerpi.xyz';
+        // IMPORTANTE: Por ahora TODO es testnet excepto runnerpi.xyz
+        // vercel.app siempre es testnet, no mainnet
+        const isMainnetDomain = hostname === 'runnerpi.xyz' || hostname === 'www.runnerpi.xyz';
         
-        // Todo lo demás es testnet (incluyendo vercel.app y localhost)
-        const isTestnetDomain = hostname.includes('vercel.app') || hostname === 'localhost' || hostname === '127.0.0.1';
-        
+        // TODO LO DEMÁS ES TESTNET (incluye vercel.app, localhost, etc)
         console.log(`🔍 Domain detection: ${hostname} -> ${isMainnetDomain ? 'Mainnet' : 'Testnet'}`);
         
         return isMainnetDomain;
