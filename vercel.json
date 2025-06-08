@@ -3,7 +3,7 @@
   "name": "pi-runner-mainnet",
   "public": true,
   "trailingSlash": false,
-  "cleanUrls": true,
+  "cleanUrls": false,
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": ".",
   "env": {
@@ -27,12 +27,36 @@
           "value": "frame-ancestors 'self' https://*.minepi.com https://*.pinet.com"
         }
       ]
+    },
+    {
+      "source": "/validation-key.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "src": "/validation-key.txt",
+      "dest": "/validation-key.txt",
+      "headers": {
+        "Content-Type": "text/plain"
+      }
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }

@@ -1,0 +1,9 @@
+# Incluir validation-key.txt explícitamente
+!validation-key.txt
+
+# Excluir archivos innecesarios
+temp_cleanup/
+node_modules/
+.git/
+*.log
+.env
