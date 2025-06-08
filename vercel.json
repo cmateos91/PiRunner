@@ -1,17 +1,19 @@
 {
   "version": 2,
-  "public": true,
-  "env": {
-    "NODE_ENV": "production",
-    "PI_NETWORK_MODE": "mainnet"
-  },
+  "redirects": [
+    {
+      "source": "https://www.runnerpi.xyz/(.*)",
+      "destination": "https://runnerpi.xyz/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/validation-key.txt",
       "headers": [
         {
-          "key": "X-Frame-Options",
-          "value": "ALLOWALL"
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
         }
       ]
     }
