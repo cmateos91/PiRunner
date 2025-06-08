@@ -102,7 +102,7 @@ class PiNetworkManager {
         try {
             // Precio dinámico según environment
             const isMainnet = this.isMainnetEnvironment();
-            const price = isMainnet ? 0.001 : 0.001; // Mainnet más caro, testnet barato
+            const price = isMainnet ? 0.01 : 0.001; // Mainnet más caro, testnet barato
             
             const paymentData = {
                 amount: price,
